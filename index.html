@@ -69,6 +69,11 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 .bars div{flex:1;background:var(--brand);border-radius:5px 5px 0 0;min-height:3px;position:relative}
 .bars div span{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute)}
 .est{color:var(--mute)}
+.hero{position:relative;height:150px;border-radius:var(--r);overflow:hidden;margin:10px 0;background:#1d3a2c}
+.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.hero b{position:absolute;left:14px;bottom:12px;right:14px;color:#fff;font-size:20px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 60%)}
+.hero b{z-index:1}
 .art{position:relative;overflow:hidden;border-radius:12px;height:116px;display:flex;align-items:center;justify-content:center}
 .art .plate{position:absolute;width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(0,0,0,.25),inset 0 0 0 6px rgba(0,0,0,.05)}
 .art .e0{position:relative;font-size:54px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
@@ -130,7 +135,6 @@ const ITEMS={
  potato:{n:"Potatoes, 3 lb",p:3.99,s:"produce"},
  fveg:{n:"Frozen stir-fry vegetables",p:2.49,s:"frozen"},
  peas:{n:"Frozen peas & carrots",p:1.99,s:"frozen"},
- edamame:{n:"Frozen shelled edamame",p:2.49,s:"frozen"},
  rice:{n:"Rice, 2 lb",p:2.99,s:"grocery"},
  spag:{n:"Spaghetti",p:1.49,s:"grocery"},
  cavat:{n:"Cavatappi pasta",p:1.79,s:"grocery"},
@@ -620,7 +624,7 @@ function viewMenu(C){
   const f=UI.mf||"All";
   const ids=f==="Loved"?MEALS.filter(m=>loved(m.id)).map(m=>m.id):f==="Hidden"?MEALS.filter(m=>isNo(m.id)).map(m=>m.id):menuIds().filter(id=>{const m=meal(id);return m&&(f==="All"||m.t===f);});
   const target=sel.length>=5&&sel.length<=6;
-  let h=`<div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
+  let h=`<div class="hero"><img src="bowl.jpg" alt="" onerror="this.remove()"><b>What sounds good this week?</b></div><div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
    <div class="mute">Tap the meals you want. He eats one or two real meals a day, so 5 or 6 is plenty. Each is a single serving, one pan or pot. Meal prices are the portion you use. The total counts whole packages, since that is what he pays at the register.</div>
    <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>

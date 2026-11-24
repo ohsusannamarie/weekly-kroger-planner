@@ -11,7 +11,7 @@ A phone-first weekly grocery list builder. No backend, no accounts: everything s
 - Prices marked `~` are estimates. Unmarked prices came from his Kroger receipts (Apr to Aug 2026). Tap any price to correct it and the app remembers.
 
 ## Publish on GitHub Pages
-1. Create a repo, for example `dakota-groceries`, and upload these files to the root: `index.html`, `manifest.webmanifest`, `sw.js`, `icon.svg`.
+1. Upload these files to the repo root: `index.html`, `manifest.webmanifest`, `sw.js`, `icon.svg`, `bowl.jpg` (the hero photo).
 2. Settings > Pages > Source: Deploy from a branch > `main` / root > Save.
 3. Open `https://<your-username>.github.io/dakota-groceries/` on his phone, then Share > Add to Home Screen.
 
