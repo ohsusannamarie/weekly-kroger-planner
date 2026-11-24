@@ -1,17 +1,24 @@
-# Weekly Kroger Planner
+# Dakota's Grocery Planner
 
-Pick seven single-serving meals from a rotating weekly menu and generate one aisle-by-aisle shopping list. Choose from original ideas, HelloFresh-inspired meals, and freezer and pantry options. The optional starter plan shows a complete week.
+A phone-first weekly grocery list builder. No backend, no accounts: everything saves in the browser on whichever device he uses.
 
-- Pick meals from the menu and see them placed by freshness. The last two days have their own freezer and pantry options.
-- Combine ingredients into full grocery packages while you pick.
-- Add regular staples and household products, edit prices, mark items on hand and check off purchases.
-- Track the food and household subtotals against an editable weekly budget. Prices are planning estimates.
-- Copy the unchecked list to text. Plans and prices are saved in the current browser. After the site has loaded online and the browser has cached it, it can reopen offline.
+## What it does
+- **Meal library:** 49 meals. 31 are new ideas built from his taste profile (his proteins, cheese, bold sauces, Tex-Mex, sweet and spicy Asian, garlicky Italian, steakhouse, BBQ, vegetables hidden inside dishes). The rest are his favorites and past HelloFresh hits. Every meal is single-serving, one pan or pot, with no canned food and no scrambled eggs. The picker leads with 3 suggestions picked for him.
+- **Plan tab:** pick meals for each day after the shopping trip. Each fresh-protein meal is set to Cook fresh, Freeze it, or Mid-week run. Days 3 to 6 default to Freeze so the 72 hour rule holds. Auto-fill suggests a week that fits the budget.
+- **List tab:** builds the main trip list by store section, merges shared ingredients into whole packages, and runs a separate mid-week protein list. Coffee kit check (heavy cream, cane sugar, Café Bustelo), fruit and salad kit, weekly basics, backup stash, household.
+- **Next week:** after logging a main trip, Start next week's menu clears the plan and builds a new menu.
+- **Trip tab:** log what you actually spent, separate main trips from top-ups, see the past 7 days against $75, and get a freeze-tonight checklist.
+- Prices marked `~` are estimates. Unmarked prices came from his Kroger receipts (Apr to Aug 2026). Tap any price to correct it and the app remembers.
 
-## Local preview
+## Publish on GitHub Pages
+1. Create a repo, for example `dakota-groceries`, and upload these files to the root: `index.html`, `manifest.webmanifest`, `sw.js`, `icon.svg`.
+2. Settings > Pages > Source: Deploy from a branch > `main` / root > Save.
+3. Open `https://<your-username>.github.io/dakota-groceries/` on his phone, then Share > Add to Home Screen.
 
-Run `python3 -m http.server 8767` from this folder and open [localhost:8767](http://localhost:8767). No build step or account is required for the planner.
+## Editing the data
+Meals, items, prices and the coffee kit live at the top of the `<script>` in `index.html` (`ITEMS`, `MEALS`, `KIT`). Source for the numbers: Dakota's Food Profile doc.
 
-## GitHub Pages
-
-Use the repository’s main branch and root directory as the Pages publishing source. Keep `.nojekyll` in the published folder. If changing the app shell, advance the cache version in `sw.js`.
+## Notes
+- Data is per device. Clearing site data erases the plan and history.
+- Canned foods are deliberately absent (he avoids them), so there is no chili.
+- Add your own meals by copying a line in `MEALS` and listing item ids with the fraction of a package each meal uses.

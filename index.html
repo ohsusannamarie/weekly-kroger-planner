@@ -1,114 +1,726 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#173e33">
-<title>Weekly Kroger Planner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6f4a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Dakota's Grocery Planner</title>
 <style>
-:root{color-scheme:light;--paper:#f6f4ec;--white:#fffef9;--green:#173e33;--green-mid:#2e594b;--lime:#e6eecf;--ink:#182c25;--dim:#50625a;--line:#d9e0d3;--warn:#892e1e;--gold:#f7e8cd;--radius:18px;font-family:system-ui,-apple-system,sans-serif}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);line-height:1.45}
-button,input,select{font:inherit;color:inherit}button,select,input[type=date]{cursor:pointer}input,select{min-width:0;max-width:100%}button,input,select{border:1px solid var(--line);border-radius:10px;background:var(--white);padding:.57rem .73rem;min-height:44px}
-button{font-weight:650}button:hover{background:var(--lime)}:focus-visible{outline:3px solid #628244;outline-offset:3px}
-a{color:inherit;text-underline-offset:.22em}h1,h2,h3,p{margin:0}h1,h2{font-family:Georgia,serif;font-weight:normal;line-height:1.05}h2{font-size:clamp(1.9rem,4vw,2.6rem)}small,.muted{color:var(--dim);font-size:.86rem}
-header{background:var(--green);color:var(--white)}.shell{width:min(1140px,calc(100% - 36px));margin:auto}.hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:stretch;min-height:232px}
-.hero-copy{padding:36px 24px 34px 0}.hero h1{font-size:clamp(2.5rem,6vw,4.75rem);letter-spacing:-.055em}.hero p{color:#e6eedf;margin:14px 0 22px;max-width:34ch}.hero-photo{background:#2e594b url('bowl.jpg') center 54%/cover no-repeat;min-height:130px}
-.jump{display:inline-flex;align-items:center;padding:.59rem .89rem;border-radius:10px;background:var(--lime);color:var(--green);font-weight:750;text-decoration:none;min-height:44px}
-.controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px 16px;padding:16px 0}.control{display:grid;gap:4px;font-weight:650;font-size:.85rem}.control input[type=number]{width:105px}
-.topline{border-bottom:1px solid var(--line);background:#ecefe3}.week-actions{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:24px;padding:28px 0 32px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.panel-head{padding:22px 20px 16px}.panel-head p{margin-top:7px}.coverage{padding:12px 16px;background:var(--lime);border-radius:12px;margin:0 20px 12px;font-size:.9rem}.coverage.needs{background:var(--gold)}
-.days{padding:0 20px 12px}.day{padding:13px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px 12px;align-items:start}
-.dateline{padding-top:4px;display:grid;gap:3px}.day select{width:100%}.reserve{font-size:.68rem;text-transform:uppercase;letter-spacing:.055em;font-weight:780;color:var(--green-mid)}
-details{font-size:.84rem;color:var(--dim);margin-top:6px}summary{cursor:pointer;padding:4px 0;font-weight:650}details p{padding:4px 0}.warning{color:var(--warn);margin-top:5px}
-.budget{background:var(--green);color:var(--white);padding:20px}.budget small{color:#dce8da}.budget-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.total{display:block;font:normal 2.8rem/1 Georgia,serif}.room{font-weight:750;text-align:right}.over{color:#ffd8b8}
-.track{height:7px;border-radius:8px;background:#4c675c;overflow:hidden;margin:14px 0}#bar{height:100%;background:#c8df8e;width:0}.breakdown{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;font-size:.82rem}
-.shop-tools{padding:12px 20px 0;display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap}.primary{background:var(--green);color:white;border-color:var(--green)}.primary:hover{background:var(--green-mid)}
-#list{padding:0 20px 16px}.group{margin-top:15px}.group h3{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--green-mid);margin-bottom:4px}.row{display:grid;grid-template-columns:minmax(0,1fr) auto 79px;align-items:center;gap:8px;border-top:1px solid var(--line);padding:6px 0}.item{display:flex;gap:8px;align-items:center;min-height:44px;min-width:0}.item span{overflow-wrap:anywhere}.item input{appearance:auto;accent-color:var(--green);min-height:21px;width:21px;margin:0;flex:none}.item small{display:block}.row.bought .item strong{text-decoration:line-through}.row.stocked .item{opacity:.7}.row input[type=number]{width:79px;padding:.45rem}.have{font-size:.76rem;padding:.37rem .5rem}.have[aria-pressed=true]{background:var(--lime)}.list-note{margin-top:10px}
-.add{border-top:1px solid var(--line);padding:13px 20px 18px}.add summary{font-size:.95rem;color:var(--green)}.add-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:9px 0}.add input,.add select{width:100%}.delete{grid-column:2 / 4;justify-self:end;font-size:.75rem;min-height:36px}.foot{padding-bottom:24px}.notice{margin-top:10px;color:var(--warn)}.secondary{display:flex;gap:6px 14px;flex-wrap:wrap;margin-top:8px}.sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.skip{position:absolute;top:4px;left:8px;transform:translateY(-150%);background:white;padding:10px;z-index:2}.skip:focus{transform:none}[hidden]{display:none!important}
-button:disabled{cursor:default;opacity:.65}.hero-links{display:flex;flex-wrap:wrap;gap:8px}.hero-links .quiet{background:transparent;color:var(--white);border:1px solid #92a398}
-.menu{margin-top:24px}.menu-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap}.menu-meta{text-align:right}.menu-meta p{font-weight:750}.menu-links{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 0}.menu-filter[aria-pressed=true]{background:var(--lime);border-color:#92a774}.menu-body{padding:0 20px 20px}.menu-section{margin-top:14px}.menu-section h3{font-size:1rem;margin-bottom:8px}.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:10px}.meal-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}.meal-card.selected{border-color:#83a164;background:#edf2df}.meal-card h4{margin:0;font-size:1rem;line-height:1.25}.meal-card .flavor{flex:1}.meal-card button{padding:.45rem .65rem;font-size:.85rem;margin-top:2px}.menu-note{min-height:1.25em;margin:10px 0 0}.recipe-items{line-height:1.5}.menu-filter{font-size:.85rem}.menu-option-time{margin-top:auto}
-@media(max-width:760px){.layout{grid-template-columns:1fr;gap:16px;padding-top:16px}.hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:26px 0 22px}.hero-photo{border-radius:14px 14px 0 0;min-height:128px}.hero p{margin:8px 0 14px}.week-actions{margin-left:0}.menu-meta{text-align:left}.menu-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr))}.shell{width:calc(100% - 24px)}}@media(max-width:370px){.days,.panel-head,#list,.shop-tools,.add,.menu-body{padding-left:13px;padding-right:13px}.coverage{margin-left:13px;margin-right:13px}.day{grid-template-columns:64px minmax(0,1fr);gap:8px}.row{grid-template-columns:minmax(0,1fr) auto 64px;gap:5px}.row input[type=number]{width:64px}}
+:root{
+  --bg:#f6f3ee;--card:#fff;--ink:#1d2320;--mute:#66716b;--line:#e4dfd6;
+  --brand:#1f6f4a;--brand-ink:#fff;--soft:#e6f1ea;--warn:#b86e00;--warnbg:#fff3dc;--bad:#b3261e;--badbg:#fde8e6;--ice:#e3eefb;--ice-ink:#1c4f8a;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#141815;--card:#1d231f;--ink:#eef2ee;--mute:#9aa7a0;--line:#2c352f;--brand:#4fb582;--brand-ink:#08140d;--soft:#1f3a2c;--warn:#f0b04a;--warnbg:#3a2c10;--bad:#ff8a80;--badbg:#3d1a17;--ice:#1b2e47;--ice-ink:#9cc4f5}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:0}h2{font-size:17px;margin:0 0 8px}h3{font-size:15px;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:12px}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 12px 8px;border-bottom:1px solid var(--line)}
+header.top .in{max-width:640px;margin:0 auto}
+.row{display:flex;align-items:center;gap:8px}
+.sp{flex:1}
+.mute{color:var(--mute);font-size:13px}
+.meter{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 2px}
+.meter>i{display:block;height:100%;background:var(--brand);transition:width .25s}
+.meter.warn>i{background:var(--warn)}.meter.bad>i{background:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin:10px 0}
+.card.flag{border-color:var(--warn)}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:99px;padding:5px 11px;background:var(--card);font-size:14px;min-height:34px}
+.chip.on{background:var(--soft);border-color:var(--brand);font-weight:600}
+.chip.ice{background:var(--ice);color:var(--ice-ink);border-color:transparent}
+.chip.warn{background:var(--warnbg);color:var(--warn);border-color:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.btn{border:0;border-radius:11px;padding:10px 14px;background:var(--brand);color:var(--brand-ink);font-weight:600;min-height:44px}
+.btn.sec{background:var(--soft);color:var(--ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{min-height:34px;padding:5px 10px;font-size:14px}
+.btn.full{width:100%}
+.meal{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.meal:first-of-type{border-top:0}
+.meal .nm{font-weight:600}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav.tabs button{flex:1;border:0;background:none;padding:12px 4px 10px;font-size:14px;color:var(--mute);font-weight:600}
+nav.tabs button.on{color:var(--brand)}
+nav.tabs button b{display:block;font-size:20px;line-height:1}
+.item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0}
+.item input[type=checkbox]{width:24px;height:24px;accent-color:var(--brand);flex:none}
+.item.done .t{text-decoration:line-through;color:var(--mute)}
+.item .t{flex:1;min-width:0}
+.item .p{font-variant-numeric:tabular-nums;white-space:nowrap;border:0;background:none;padding:6px 4px;color:var(--ink)}
+.qty{display:inline-flex;align-items:center;gap:2px}
+.qty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);font-size:18px;line-height:1}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end}
+.sheet>div{background:var(--bg);width:100%;max-width:640px;margin:0 auto;max-height:86vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}
+.note{border-radius:10px;padding:9px 11px;background:var(--soft);font-size:14px;margin:8px 0}
+.note.warn{background:var(--warnbg)}.note.bad{background:var(--badbg)}
+input[type=text],input[type=number],select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-height:42px}
+input[type=text]{width:100%}
+.big{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+details summary{cursor:pointer;font-weight:600;padding:4px 0}
+.bars{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:6px}
+.bars div{flex:1;background:var(--brand);border-radius:5px 5px 0 0;min-height:3px;position:relative}
+.bars div span{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:11px;color:var(--mute)}
+.est{color:var(--mute)}
+.art{position:relative;overflow:hidden;border-radius:12px;height:116px;display:flex;align-items:center;justify-content:center}
+.art .plate{position:absolute;width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(0,0,0,.25),inset 0 0 0 6px rgba(0,0,0,.05)}
+.art .e0{position:relative;font-size:54px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.art .e1,.art .e2{position:absolute;font-size:26px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.art .e1{left:calc(50% + 40px);top:62px}.art .e2{left:calc(50% - 68px);top:18px}
+.art.sm{height:64px;width:64px;flex:none;border-radius:10px}
+.art.sm .plate{width:48px;height:48px}.art.sm .e0{font-size:28px}.art.sm .e1,.art.sm .e2{display:none}
+.art .time{position:absolute;right:8px;top:8px;background:rgba(0,0,0,.45);color:#fff;border-radius:99px;font-size:12px;padding:2px 8px}
+.art.sm .time{display:none}
+.art .heart{position:absolute;left:8px;top:6px;color:#ff5a6e;font-size:22px;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.art.sm .heart{font-size:14px;left:4px;top:2px}
+.chip.love.on{background:#ffe3e7;border-color:#e0425a;color:#b3213a}
+@media (prefers-color-scheme:dark){.chip.love.on{background:#4a1c25;color:#ff9aa8}}
+.mc{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;padding:0}
+.card.sel{border-color:var(--brand);background:var(--soft)}
+.ring{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:2px;background:var(--card)}
+.card.sel .ring{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.cost{font-variant-numeric:tabular-nums;font-weight:600}
+.tag{font-size:12px;border-radius:6px;padding:1px 6px;background:var(--line);color:var(--mute)}
 </style>
-<script src="app.js?v=2" defer></script>
 </head>
 <body>
-<a class="skip" href="#weekly-menu">Skip to weekly menu</a>
-<header>
-  <div class="shell hero">
-    <div class="hero-copy">
-      <h1>Weekly Kroger Planner</h1>
-      <p>Choose what sounds good this week. Your Kroger list builds as you go.</p>
-      <div class="hero-links"><a class="jump" href="#weekly-menu">Pick this week’s meals ↓</a><a class="jump quiet" href="#shopping">Shopping list</a></div>
-    </div>
-    <div class="hero-photo" aria-hidden="true"></div>
-  </div>
-</header>
-<div class="topline">
- <div class="shell controls">
-  <label class="control">Shopping day <input id="start" type="date"></label>
-  <label class="control">Weekly budget ($) <input id="limit" type="number" min="0" max="9999" step=".01"></label>
-  <label class="control">Tax buffer ($) <input id="tax" type="number" min="0" max="9999" step=".01"></label>
-  <div class="week-actions"><button id="starter" type="button">Load starter plan</button><button id="next" type="button">Start next week</button></div>
- </div>
-</div>
-<main class="shell">
-<section class="panel menu" id="weekly-menu" aria-labelledby="menu-title">
- <div class="panel-head">
-  <div class="menu-head">
-   <div><h2 id="menu-title">This week’s menu</h2><p class="muted">Pick up to seven meals. Save two freezer or pantry picks for the end of the week.</p></div>
-   <div class="menu-meta"><p id="menu-count"></p><small id="menu-total"></small> · <a class="muted" href="#plan">View your week</a></div>
-  </div>
-  <div class="menu-links" aria-label="Filter meal options">
-   <button class="menu-filter" type="button" data-filter="all" aria-pressed="true">Weekly picks</button>
-   <button class="menu-filter" type="button" data-filter="early" aria-pressed="false">Cook early</button>
-   <button class="menu-filter" type="button" data-filter="flex" aria-pressed="false">Midweek</button>
-   <button class="menu-filter" type="button" data-filter="reserve" aria-pressed="false">Freezer &amp; pantry</button>
-   <button class="menu-filter" type="button" data-filter="full" aria-pressed="false">Full menu</button>
-  </div>
-  <p class="menu-note muted" id="menu-status" role="status"></p>
- </div>
- <div class="menu-body" id="menu-cards"></div>
-</section>
-<div class="layout">
- <section class="panel" id="plan" aria-labelledby="plan-title">
-  <div class="panel-head"><h2 id="plan-title">This week’s meals</h2><p class="muted">Meals are placed by freshness. Use the day menus to move a recipe or leave a day open.</p></div>
-  <div class="coverage" id="coverage" role="status"></div>
-  <div class="days" id="days"></div>
- </section>
- <section class="panel" id="shopping" aria-labelledby="shop-title">
-  <div class="panel-head"><h2 id="shop-title">Kroger list</h2><p class="muted">Meal ingredients are combined into full packages. Mark what you have and edit prices as needed.</p></div>
-  <div class="budget" id="budget" aria-live="polite">
-   <div class="budget-top"><div><small>Estimated checkout</small><strong class="total" id="total"></strong></div><div class="room" id="room"></div></div>
-   <div class="track" aria-hidden="true"><div id="bar"></div></div>
-   <div class="breakdown"><span id="food-total"></span><span id="home-total"></span><span id="tax-total"></span></div>
-  </div>
-  <div class="shop-tools"><span id="progress" class="muted" aria-live="polite"></span><button class="primary" type="button" id="copy">Copy unchecked list</button></div>
-  <div id="list"></div>
-  <div class="add">
-   <details>
-    <summary>Add staples or household supplies</summary>
-    <form id="staple-form" class="add-grid"><label class="sr" for="staple">Choose a staple</label><select id="staple"></select><button type="submit">Add a pack</button></form>
-   </details>
-   <details>
-    <summary>Add something else</summary>
-    <form id="extra-form">
-     <div class="add-grid">
-      <label class="sr" for="extra-name">Item name</label><input id="extra-name" maxlength="65" placeholder="Item name" required>
-      <label class="sr" for="extra-price">Estimated price</label><input id="extra-price" placeholder="Price ($)" type="number" min="0" max="9999" step=".01" required>
-      <label class="sr" for="extra-group">Aisle</label><select id="extra-group"><option>Pantry</option><option>Produce</option><option>Meat &amp; seafood</option><option>Frozen</option><option>Dairy &amp; deli</option><option>Household</option></select>
-      <button type="submit">Add item</button>
-     </div>
-    </form>
-   </details>
-   <p class="notice" id="action-status" role="status" hidden></p>
-  </div>
- </section>
-</div>
-</main>
-<footer class="shell foot muted">
- <p id="save-status">Your plan and list are saved in this browser.</p>
- <div class="secondary"><span>Prices are editable estimates.</span><a href="https://ask.fsis.usda.gov/article/How-long-can-I-keep-meat-in-the-refrigerator" target="_blank" rel="noopener">USDA food storage</a></div>
-</footer>
+<header class="top"><div class="in" id="top"></div></header>
+<main class="wrap" id="main"></main>
+<nav class="tabs" id="tabs"></nav>
+<div id="sheet"></div>
+
+<script>
+"use strict";
+/* ========= DATA ========= */
+// p = price. obs:1 means seen on a real receipt (Apr-Aug 2026). Everything else is an estimate (shown as ~$).
+// f:1 = fresh perishable protein (subject to the 72 hour rule). s = store section. pan:1 = pantry item (assumed in stock until you flag it).
+const SECTIONS=[["meat","Meat & deli"],["dairy","Dairy & eggs"],["produce","Produce"],["frozen","Frozen"],["grocery","Grocery & pantry"],["bakery","Bread & bakery"],["bev","Coffee & drinks"],["home","Household"]];
+const ITEMS={
+ gbs:{n:"Ground Angus sirloin 90/10, 1 lb",p:10.49,obs:1,s:"meat",f:1},
+ gb80:{n:"Ground beef 80/20, 1 lb",p:6.49,obs:1,s:"meat",f:1},
+ gpork:{n:"Ground pork, 1 lb",p:5.49,s:"meat",f:1},
+ turk:{n:"Ground turkey, 1 lb",p:5.49,s:"meat",f:1},
+ chk:{n:"Chicken breast, ~1.5 lb",p:7.49,s:"meat",f:1},
+ pork:{n:"Boneless pork loin chop",p:5.00,obs:1,s:"meat",f:1},
+ bacon:{n:"Thick-cut hardwood smoked bacon, 16 oz",p:4.79,obs:1,s:"meat",f:1},
+ ham:{n:"Deli honey ham, ~0.75 lb",p:8.75,obs:1,s:"meat",f:1},
+ shrimp:{n:"Frozen raw shrimp, 12 oz",p:8.99,s:"frozen"},
+ hwc:{n:"Heavy whipping cream, pint",p:3.39,obs:1,s:"dairy"},
+ hwcq:{n:"Heavy whipping cream, quart",p:5.49,obs:1,s:"dairy"},
+ milk:{n:"Whole milk, gallon",p:3.19,obs:1,s:"dairy"},
+ butter:{n:"Kerrygold salted butter, 8 oz",p:6.29,obs:1,s:"dairy"},
+ cheese:{n:"Shredded Nacho & Taco cheese, 8 oz",p:2.49,obs:1,s:"dairy"},
+ swiss:{n:"Swiss cheese slices",p:3.99,s:"dairy"},
+ colby:{n:"Colby Jack & Gouda snack pack",p:9.49,obs:1,s:"dairy"},
+ yogurt:{n:"Low-fat yogurt tubes, 8 ct",p:1.99,obs:1,s:"dairy"},
+ flip:{n:"Chobani Flip (dessert flavors)",p:1.20,obs:1,s:"dairy"},
+ banana:{n:"Bananas",p:1.34,obs:1,s:"produce"},
+ apples:{n:"Honeycrisp apples, bag",p:6.99,obs:1,s:"produce"},
+ saladkit:{n:"Bagged salad kit (Dole Caesar)",p:2.99,obs:1,s:"produce"},
+ onion:{n:"Yellow onions, 2 lb",p:3.29,obs:1,s:"produce"},
+ mush:{n:"Sliced baby bella mushrooms",p:2.17,obs:1,s:"produce"},
+ gbeans:{n:"Green beans",p:2.49,s:"produce"},
+ potato:{n:"Potatoes, 3 lb",p:3.99,s:"produce"},
+ fveg:{n:"Frozen stir-fry vegetables",p:2.49,s:"frozen"},
+ peas:{n:"Frozen peas & carrots",p:1.99,s:"frozen"},
+ edamame:{n:"Frozen shelled edamame",p:2.49,s:"frozen"},
+ rice:{n:"Rice, 2 lb",p:2.99,s:"grocery"},
+ spag:{n:"Spaghetti",p:1.49,s:"grocery"},
+ cavat:{n:"Cavatappi pasta",p:1.79,s:"grocery"},
+ lomein:{n:"Lo mein noodles",p:2.99,s:"grocery"},
+ tort:{n:"Mission flour tortillas",p:3.29,s:"bakery"},
+ buns:{n:"Hamburger buns, 8 ct",p:3.49,s:"bakery"},
+ hoagie:{n:"Hoagie rolls, 6 ct",p:3.99,s:"bakery"},
+ biscuits:{n:"Refrigerated biscuits",p:3.19,s:"bakery"},
+ bread:{n:"Dave's Killer Bread 21 Whole Grains",p:6.99,obs:1,s:"bakery"},
+ crackers:{n:"Crackers or pita chips",p:3.49,s:"grocery"},
+ broth:{n:"Chicken broth, carton",p:2.99,s:"grocery"},
+ ragu:{n:"Ragu Roasted Garlic sauce",p:3.49,s:"grocery"},
+ salsa:{n:"Salsa",p:3.29,s:"grocery"},
+ bbq:{n:"BBQ sauce",p:2.99,s:"grocery",pan:1},
+ buff:{n:"Buffalo sauce",p:2.99,s:"grocery",pan:1},
+ swchili:{n:"Sweet chili sauce",p:2.99,s:"grocery",pan:1},
+ taco:{n:"Taco seasoning packet",p:0.50,obs:1,s:"grocery",pan:1},
+ soy:{n:"Kikkoman soy sauce",p:2.99,obs:1,s:"grocery",pan:1},
+ wor:{n:"Worcestershire sauce",p:1.49,obs:1,s:"grocery",pan:1},
+ ketchup:{n:"Ketchup",p:2.49,s:"grocery",pan:1},
+ garlic:{n:"Garlic and seasoning blend",p:3.49,s:"grocery",pan:1},
+ sugar:{n:"Cane sugar",p:4.99,obs:1,s:"bev"},
+ bustelo:{n:"Café Bustelo Dulce de Leche",p:9.99,obs:1,s:"bev"},
+ ramen:{n:"Maruchan ramen, 6 ct",p:2.69,obs:1,s:"grocery"},
+ velv:{n:"Velveeta Shells & Cheese cups",p:1.69,obs:1,s:"grocery"},
+ idaho:{n:"Idahoan Roasted Garlic Mashed cups, 4 ct",p:4.99,obs:1,s:"grocery"},
+ cpk:{n:"California Pizza Kitchen BBQ chicken pizza",p:8.99,obs:1,s:"frozen"},
+ icecream:{n:"Ice cream, Half Baked or caramel",p:5.99,s:"frozen"},
+ tp:{n:"Toilet paper, 12 double rolls",p:6.49,obs:1,s:"home"},
+ dawn:{n:"Dawn Platinum dish soap",p:3.39,obs:1,s:"home"},
+ italsaus:{n:"Italian sausage, 1 lb",p:5.99,s:"meat",f:1},
+ kielb:{n:"Smoked sausage, 13 oz",p:3.49,obs:1,s:"meat"},
+ steak:{n:"Sirloin or flat iron steak, ~12 oz",p:9.99,s:"meat",f:1},
+ thighs:{n:"Boneless chicken thighs, ~1.5 lb",p:6.49,s:"meat",f:1},
+ rotis:{n:"Hot rotisserie chicken",p:7.99,obs:1,s:"meat",f:1},
+ salmon:{n:"Frozen salmon fillets, 4 ct",p:11.99,s:"frozen"},
+ tilapia:{n:"Frozen tilapia fillets",p:7.49,s:"frozen"},
+ eggs:{n:"Eggs, dozen",p:3.29,s:"dairy"},
+ cream:{n:"Cream cheese, 8 oz",p:2.49,s:"dairy"},
+ sour:{n:"Sour cream",p:2.29,s:"dairy"},
+ cheddarsl:{n:"Sharp cheddar slices",p:2.99,s:"dairy"},
+ provo:{n:"Provolone slices",p:3.49,s:"dairy"},
+ pjack:{n:"Pepper jack slices",p:3.49,s:"dairy"},
+ parm:{n:"Grated Parmesan",p:3.99,s:"dairy"},
+ bell:{n:"Bell peppers, 3 ct",p:3.49,s:"produce"},
+ spinach:{n:"Baby spinach, bag",p:2.99,s:"produce"},
+ sweetpot:{n:"Sweet potatoes, 3 lb",p:3.49,s:"produce"},
+ broc:{n:"Frozen broccoli florets",p:1.99,s:"frozen"},
+ tots:{n:"Frozen tater tots",p:3.49,s:"frozen"},
+ mac:{n:"Elbow macaroni",p:1.49,s:"grocery"},
+ gnocchi:{n:"Potato gnocchi, shelf-stable",p:3.49,s:"grocery"},
+ fett:{n:"Fettuccine",p:1.79,s:"grocery"},
+ chips:{n:"Tortilla chips",p:3.29,s:"grocery"},
+ honey:{n:"Honey",p:4.49,s:"grocery",pan:1},
+ teri:{n:"Panda Express Mandarin Teriyaki sauce",p:4.99,obs:1,s:"grocery",pan:1},
+ sriracha:{n:"Sriracha",p:3.29,s:"grocery",pan:1},
+ ranch:{n:"Ranch dressing",p:3.29,s:"grocery",pan:1},
+ cajun:{n:"Cajun seasoning",p:2.99,s:"grocery",pan:1},
+ vpizza:{n:"Jack's frozen pizza",p:2.99,obs:1,s:"frozen"}
+};
+// Meals. items = [id, fraction of a package used per meal]. 'gb' = whichever ground beef is selected.
+// k/g = kcal and protein from the HelloFresh export (only the HelloFresh meals have them).
+const MEALS=[
+ {id:"meatloaf",n:"Homemade meatloaf",t:"Beef",m:45,fav:1,items:[["gb",.5],["onion",.15],["ketchup",.1],["wor",.1],["potato",.35],["butter",.1],["hwc",.1]]},
+ {id:"tacos",n:"Taco night",t:"Beef",m:25,fav:1,items:[["gb",.5],["taco",1],["tort",.3],["cheese",.25],["salsa",.2],["onion",.1]]},
+ {id:"swissburg",n:"Mushroom 'n' Swiss burgers",t:"Beef",m:35,k:1210,g:59,hf:1,items:[["gb",.5],["buns",.25],["mush",.5],["swiss",.2],["onion",.15]]},
+ {id:"chilibeef",n:"Sweet chili beef & green bean bowls",t:"Beef",m:20,k:930,g:35,hf:1,items:[["gb",.5],["rice",.15],["gbeans",.5],["swchili",.25]]},
+ {id:"shep",n:"Pub-style shepherd's pie",t:"Beef",m:50,k:910,g:42,hf:1,items:[["gb",.5],["potato",.4],["peas",.5],["onion",.15],["broth",.2],["butter",.1],["cheese",.1]]},
+ {id:"porkchop",n:"Pork chop & mashed potatoes",t:"Pork",m:30,fav:1,items:[["pork",1],["potato",.35],["butter",.1],["hwc",.1],["wor",.1],["onion",.1]]},
+ {id:"sloppy",n:"Old-school BBQ pork sloppy joes",t:"Pork",m:35,k:1120,g:50,hf:1,items:[["gpork",.5],["buns",.25],["bbq",.25],["ketchup",.1],["onion",.15]]},
+ {id:"bolog",n:"Pork cavatappi bolognese",t:"Pork",m:30,k:960,g:34,hf:1,items:[["gpork",.5],["cavat",.3],["ragu",.5],["cheese",.15],["onion",.1]]},
+ {id:"quesa",n:"Cheesy bacon quesadillas",t:"Pork",m:15,hf:1,items:[["bacon",.25],["tort",.25],["cheese",.4]]},
+ {id:"potsoup",n:"Loaded potato & bacon soup",t:"Pork",m:35,fav:1,items:[["potato",.4],["bacon",.25],["hwc",.3],["onion",.15],["cheese",.2],["broth",.4]]},
+ {id:"cheesestk",n:"Cheesy buffalo chicken cheesesteaks",t:"Chicken",m:30,k:940,g:51,hf:1,items:[["chk",.5],["hoagie",.25],["cheese",.25],["buff",.25],["onion",.15]]},
+ {id:"potpie",n:"Chicken & biscuit pot pie",t:"Chicken",m:50,k:770,g:36,hf:1,items:[["chk",.4],["biscuits",.3],["peas",.5],["broth",.3],["hwc",.2],["onion",.15]]},
+ {id:"lomein",n:"Sweet & spicy chicken lo mein",t:"Chicken",m:20,k:710,g:45,hf:1,items:[["chk",.5],["lomein",.5],["fveg",.5],["swchili",.25],["soy",.1]]},
+ {id:"taqbowl",n:"Taqueria chicken bowls",t:"Chicken",m:20,k:870,g:45,hf:1,items:[["chk",.5],["rice",.15],["cheese",.2],["taco",1],["salsa",.25]]},
+ {id:"turkragu",n:"Turkey ragù spaghetti",t:"Turkey",m:20,k:810,g:43,hf:1,items:[["turk",.5],["spag",.3],["ragu",.5],["onion",.1]]},
+ {id:"szechtaco",n:"Szechuan turkey tacos",t:"Turkey",m:25,k:940,g:34,hf:1,items:[["turk",.5],["tort",.3],["soy",.1],["swchili",.25]]},
+ {id:"scampi",n:"Garlic butter shrimp scampi",t:"Seafood",m:30,k:750,g:36,hf:1,items:[["shrimp",.5],["spag",.3],["butter",.15],["garlic",.1],["hwc",.1]]},
+ {id:"snackplate",n:"Ham, cheese & cracker snack plate (no cook)",t:"Snack plate",m:5,items:[["ham",.5],["colby",.5],["crackers",.5],["apples",.2]]},
+ // ---- New ideas built from his taste profile (not HelloFresh). No canned food, no scrambled eggs, one pan or pot, single serving.
+ {id:"smashburg",n:"Bacon cheddar smash burger",t:"Beef",m:20,items:[["gb",.5],["bacon",.15],["buns",.25],["cheddarsl",.25],["onion",.15]],w:["Ground Angus","Bacon","Cheese"]},
+ {id:"nachos",n:"Loaded beef nacho skillet",t:"Beef",m:20,items:[["gb",.5],["taco",1],["chips",.5],["cheese",.35],["salsa",.2],["sour",.15]],w:["Tex-Mex","Cheese","One pan"]},
+ {id:"cheeseburgmac",n:"Cheeseburger mac skillet",t:"Beef",m:25,items:[["gb",.5],["mac",.3],["cheese",.35],["milk",.1],["onion",.1],["ketchup",.05]],w:["Ground beef","Cheese","One pot"]},
+ {id:"stuffedpep",n:"Stuffed pepper skillet",t:"Beef",m:30,items:[["gb",.5],["bell",.5],["rice",.15],["cheese",.25],["ragu",.25],["onion",.1]],w:["Veggies hidden","Cheese","One pan"]},
+ {id:"terimeat",n:"Teriyaki beef & broccoli bowls",t:"Beef",m:25,items:[["gb",.5],["broc",.5],["rice",.15],["teri",.25]],w:["Sweet and spicy","Rice cooker"]},
+ {id:"meatsub",n:"Cheesy meatball subs",t:"Beef",m:30,items:[["gb",.5],["ragu",.5],["provo",.3],["hoagie",.17],["garlic",.1]],w:["Garlicky Italian","Cheese"]},
+ {id:"steakbites",n:"Garlic butter steak bites & potatoes",t:"Beef",m:30,items:[["steak",1],["potato",.35],["butter",.15],["garlic",.1],["wor",.1]],w:["Steakhouse","Treat meal"]},
+ {id:"cheesesteak2",n:"Steak, peppers & provolone sub",t:"Beef",m:25,items:[["steak",1],["bell",.34],["onion",.15],["provo",.3],["hoagie",.17]],w:["Steakhouse","Cheese"]},
+ {id:"mushchop",n:"Smothered pork chop with mushroom cream sauce",t:"Pork",m:30,items:[["pork",1],["mush",.5],["hwc",.2],["onion",.15],["butter",.1],["broth",.15],["rice",.15]],w:["Pork chop","Heavy cream","Veggies hidden"]},
+ {id:"honeychop",n:"Honey garlic pork chop with rice & broccoli",t:"Pork",m:25,items:[["pork",1],["honey",.05],["soy",.1],["garlic",.1],["rice",.15],["broc",.5]],w:["Pork chop","Sweet and spicy","Rice cooker"]},
+ {id:"baconmac",n:"Bacon mac & cheese skillet",t:"Pork",m:30,items:[["bacon",.3],["mac",.3],["cheese",.4],["hwc",.2],["spinach",.15]],w:["Bacon","Cheese","Veggies hidden"]},
+ {id:"sausagegn",n:"Italian sausage & pepper gnocchi skillet",t:"Pork",m:25,items:[["italsaus",.5],["gnocchi",.5],["bell",.5],["onion",.15],["ragu",.3],["parm",.1]],w:["Garlicky Italian","One pan"]},
+ {id:"sausagepot",n:"Smoked sausage & cheesy potato skillet",t:"Pork",m:25,items:[["kielb",.5],["potato",.4],["cheese",.3],["onion",.15],["bell",.25],["ranch",.1]],w:["Cheese","One pan","Low cost"]},
+ {id:"hamdelts",n:"Hot honey ham & cheese melts",t:"Pork",m:10,items:[["ham",.5],["bread",.1],["provo",.2],["butter",.1],["honey",.05]],w:["Honey ham","Cheese","10 minutes"]},
+ {id:"loadedspud",n:"Loaded bacon & broccoli baked potatoes",t:"Pork",m:15,items:[["potato",.35],["bacon",.25],["cheese",.3],["sour",.2],["broc",.3]],w:["Bacon","Cheese","Microwave"]},
+ {id:"buffquesa",n:"Buffalo chicken quesadilla",t:"Chicken",m:20,items:[["chk",.5],["tort",.25],["cheese",.4],["buff",.2],["ranch",.1]],w:["Buffalo","Cheese","One pan"]},
+ {id:"honeythigh",n:"Honey garlic chicken thigh bowls",t:"Chicken",m:30,items:[["thighs",.5],["rice",.15],["honey",.05],["soy",.1],["garlic",.1],["broc",.5]],w:["Sweet and spicy","Rice cooker"]},
+ {id:"cajunalf",n:"Cajun chicken alfredo",t:"Chicken",m:25,items:[["chk",.5],["fett",.3],["hwc",.3],["parm",.15],["cajun",.1],["spinach",.2]],w:["Heavy cream","Cheese","Veggies hidden"]},
+ {id:"potpiesoup",n:"Chicken pot pie soup",t:"Chicken",m:35,items:[["rotis",.5],["peas",.5],["potato",.3],["broth",.5],["hwc",.2],["onion",.15]],w:["Homemade soup","Veggies hidden","Uses rotisserie"]},
+ {id:"bbqflat",n:"BBQ chicken tortilla pizza",t:"Chicken",m:15,items:[["rotis",.35],["bbq",.25],["tort",.25],["cheese",.35],["onion",.1]],w:["Like his CPK pizza","BBQ","Cheese"]},
+ {id:"fajita",n:"Chicken fajita skillet",t:"Chicken",m:25,items:[["chk",.5],["bell",.5],["onion",.2],["tort",.3],["cheese",.2],["taco",1],["sour",.15]],w:["Tex-Mex","Veggies hidden","One pan"]},
+ {id:"turkspud",n:"Cheesy turkey & sweet potato skillet",t:"Turkey",m:30,items:[["turk",.5],["sweetpot",.35],["onion",.1],["taco",1],["cheese",.2],["spinach",.15]],w:["Veggies hidden","Cheese","One pan"]},
+ {id:"turkburg",n:"Pepper jack turkey burger",t:"Turkey",m:20,items:[["turk",.5],["buns",.25],["pjack",.2],["ranch",.1],["onion",.1]],w:["Bold flavor","Cheese"]},
+ {id:"cajunshrimp",n:"Cajun shrimp & rice skillet",t:"Seafood",m:20,items:[["shrimp",.5],["rice",.15],["cajun",.1],["bell",.34],["butter",.1]],w:["Spicy","Frozen shrimp","Rice cooker"]},
+ {id:"shrimptaco",n:"Sriracha shrimp tacos with slaw",t:"Seafood",m:20,items:[["shrimp",.5],["tort",.3],["saladkit",.3],["sriracha",.05],["sour",.1]],w:["Sweet and spicy","Tex-Mex"]},
+ {id:"terisalmon",n:"Teriyaki salmon rice bowl",t:"Seafood",m:25,items:[["salmon",.25],["rice",.15],["broc",.5],["teri",.25]],w:["Sweet and spicy","Frozen fillet"]},
+ {id:"tilapiataco",n:"Cajun tilapia tacos",t:"Seafood",m:20,items:[["tilapia",.5],["tort",.3],["cajun",.1],["saladkit",.3],["sour",.1]],w:["Spicy","Frozen fillet"]},
+ {id:"ramenglow",lane:"pantry",n:"Loaded sausage & egg ramen",t:"Snack plate",m:10,items:[["ramen",.17],["eggs",.1],["kielb",.25],["fveg",.25],["soy",.05],["sriracha",.05]],w:["Uses backup stash","Veggies hidden","10 minutes"]},
+ {id:"pinwheels",n:"Ham & cream cheese pinwheels (no cook)",t:"Snack plate",m:10,items:[["ham",.5],["tort",.25],["cream",.3],["ranch",.05]],w:["Honey ham","No cleanup"]},
+ {id:"velvglow",lane:"pantry",n:"Velveeta shells glow-up with bacon & broccoli",t:"Snack plate",m:10,items:[["velv",2],["bacon",.15],["broc",.2]],w:["Upgrades his comfort stash","Microwave"]},
+ {id:"pizzaup",lane:"pantry",n:"Doctored frozen pizza with extra cheese & onion",t:"Snack plate",m:20,items:[["vpizza",1],["cheese",.25],["onion",.1],["ranch",.05]],w:["Cheese","Low cost","His pizza habit"]},
+ {id:"spudbowl",lane:"pantry",n:"Smoked sausage mashed potato bowl",t:"Snack plate",m:15,items:[["idaho",.5],["kielb",.5],["cheese",.2],["broc",.3]],w:["Upgrades his comfort stash","Veggies hidden","Microwave"]}
+];
+const TYPES=["All","New","Loved","Past hits","Beef","Pork","Chicken","Turkey","Seafood","Snack plate"];
+const KIT=[["hwc","Heavy whipping cream (pint)"],["sugar","Cane sugar"],["bustelo","Café Bustelo"]];
+const BASICS=[["milk"],["butter"],["cheese"],["yogurt"],["flip"],["bread"],["ham"]];
+const FRUIT=[["banana"],["apples"],["saladkit"]];
+const BACKUP=[["ramen"],["velv"],["idaho"],["cpk"],["icecream"]];
+const HOUSE=[["tp"],["dawn"]];
+const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const FRESH_DAYS=3; // days 0-2 after shopping stay inside the 72 hour window
+
+/* ========= STATE ========= */
+const KEY="dakotaGroceries.v1";
+const DEF={tab:"menu",taxRate:6,rate:{},menu:{seed:1,ids:[]},lastPicks:[],tripDone:false,budget:75,shopDay:5,beef:"gbs",freezeCap:6,plan:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},
+ extras:{hwc:1,banana:1,saladkit:1},need:{},prices:{},have:{},checked:{},custom:[],log:[],last:{}};
+let S;
+const CLONE=()=>JSON.parse(JSON.stringify(DEF));
+try{S=Object.assign(CLONE(),JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){S=CLONE();}
+for(let i=0;i<7;i++){if(!Array.isArray(S.plan[i]))S.plan[i]=[];}
+let UI={sheet:null,filter:"All",msg:""};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+/* ========= HELPERS ========= */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>"$"+(Math.round(n*100)/100).toFixed(2);
+const rid=id=>id==="gb"?S.beef:id;
+const price=id=>S.prices[id]!=null?S.prices[id]:ITEMS[id].p;
+const isEst=id=>!ITEMS[id].obs&&S.prices[id]==null;
+const fmtP=id=>(isEst(id)?"~":"")+money(price(id));
+function shopDate(){const d=new Date();d.setHours(12,0,0,0);while(d.getDay()!==S.shopDay)d.setDate(d.getDate()+1);return d;}
+function dayDate(off){const d=shopDate();d.setDate(d.getDate()+off);return d;}
+const dayLabel=off=>{const d=dayDate(off);return DAYS[d.getDay()]+" "+(d.getMonth()+1)+"/"+d.getDate();};
+const meal=id=>MEALS.find(m=>m.id===id);
+const ART={
+ meatloaf:["🍖","🥔","🧈"],tacos:["🌮","🧀","🌶️"],swissburg:["🍔","🍄","🧅"],chilibeef:["🍚","🥦","🥩"],shep:["🥧","🥔","🥕"],
+ porkchop:["🥩","🥔","🧈"],sloppy:["🥪","🧅","🍟"],bolog:["🍝","🧀","🍅"],quesa:["🌮","🧀","🥓"],potsoup:["🍲","🥓","🥔"],
+ cheesestk:["🥖","🧀","🌶️"],potpie:["🥧","🍗","🥕"],lomein:["🍜","🍗","🥦"],taqbowl:["🥗","🍗","🍚"],turkragu:["🍝","🍅","🧅"],
+ szechtaco:["🌮","🌶️","🥢"],scampi:["🍤","🍝","🧄"],snackplate:["🧀","🍎","🍖"],smashburg:["🍔","🥓","🧀"],nachos:["🧀","🌶️","🍅"],
+ cheeseburgmac:["🧀","🍔","🍝"],stuffedpep:["🫑","🍚","🧀"],terimeat:["🥦","🍚","🥩"],meatsub:["🥖","🍅","🧀"],
+ steakbites:["🥩","🥔","🧈"],cheesesteak2:["🥖","🫑","🥩"],mushchop:["🥩","🍄","🥛"],honeychop:["🥩","🍯","🍚"],
+ baconmac:["🥓","🧀","🍝"],sausagegn:["🌭","🫑","🍅"],sausagepot:["🌭","🥔","🧀"],hamdelts:["🥪","🍯","🧀"],
+ loadedspud:["🥔","🥓","🧀"],buffquesa:["🌮","🔥","🍗"],honeythigh:["🍗","🍯","🥦"],cajunalf:["🍝","🍗","🌶️"],
+ potpiesoup:["🍲","🍗","🥕"],bbqflat:["🍕","🍗","🧅"],fajita:["🫑","🌮","🍗"],turkspud:["🍠","🧀","🍽️"],
+ turkburg:["🍔","🌶️","🧅"],cajunshrimp:["🍤","🍚","🌶️"],shrimptaco:["🌮","🍤","🌶️"],terisalmon:["🐟","🍚","🥦"],
+ tilapiataco:["🌮","🐟","🌶️"],ramenglow:["🍜","🥚","🌭"],pinwheels:["🌯","🍖","🧀"],velvglow:["🧀","🥓","🥦"],pizzaup:["🍕","🧀","🧅"],spudbowl:["🥔","🌭","🥦"]
+};
+const GRAD={Beef:["#b4472a","#6e2616"],Pork:["#d9794a","#8f3f22"],Chicken:["#e0a93c","#a8691a"],Turkey:["#a87b4f","#6b4a2b"],Seafood:["#3b8db8","#1f5476"],"Snack plate":["#6f9c52","#3f6b33"]};
+function art(m,sm){
+  const a=ART[m.id]||["🍽️","",""];const g=GRAD[m.t]||GRAD.Beef;
+  return `<div class="art${sm?" sm":""}" style="background:linear-gradient(135deg,${g[0]},${g[1]})"><span class="plate"></span><span class="e0">${a[0]}</span><span class="e1">${a[1]}</span><span class="e2">${a[2]}</span><span class="time">${m.m} min</span>${S.rate[m.id]==="love"?'<span class="heart">♥</span>':""}</div>`;
+}
+const RAWMEAT=["gbs","gb80","gpork","turk","chk","pork","thighs","steak","italsaus"],CURED=["bacon","ham","rotis","kielb"];
+const LANES=[["early","Cook early","Days 1 to 3. Fresh meat that should be cooked first."],["mid","Midweek","Bacon, ham and rotisserie. Cook these in the middle of the week."],["pantry","Freezer & pantry","Frozen or shelf-stable. Save two of these for the end of the week."]];
+function lane(m){
+  if(m.lane)return m.lane;
+  const ids=m.items.map(([r])=>rid(r));
+  if(ids.some(i=>RAWMEAT.includes(i)))return "early";
+  if(ids.some(i=>CURED.includes(i)))return "mid";
+  return "pantry";
+}
+const kind=m=>S.rate[m.id]==="love"?"Loved":m.hf?"Past hit":m.fav?"Classic":"New idea";
+const isNo=id=>S.rate[id]==="no";
+const loved=id=>S.rate[id]==="love";
+const TW={Beef:3,Pork:3,Chicken:1.5,Turkey:1,Seafood:1.2,"Snack plate":.3};
+const tagsOf=m=>(m.w||[]).slice(0,3);
+function planned(){const a=[];for(let o=0;o<7;o++)for(const sl of S.plan[o])a.push(sl.id);return a;}
+function suggest(n){
+  const have=planned(),cnt={};
+  have.forEach(id=>{const m=meal(id);if(m)cnt[m.t]=(cnt[m.t]||0)+1;});
+  const sc=MEALS.filter(m=>!have.includes(m.id)&&!isNo(m.id)&&(cnt[m.t]||0)<2).map(m=>({m,s:(TW[m.t]||1)+(m.hf?0:2)+(m.fav?.5:0)+(loved(m.id)?2.5:0)+Math.random()*1.5}));
+  sc.sort((a,b)=>b.s-a.s);
+  const out=[],seen=new Set();
+  for(const x of sc){if(out.length>=n)break;if(seen.has(x.m.t))continue;seen.add(x.m.t);out.push(x.m);}
+  return out;
+}
+function defMode(off){return off<FRESH_DAYS?"fresh":"freeze";}
+
+/* ========= LIST ENGINE ========= */
+function compute(){
+  const main={},mid={};
+  for(let off=0;off<7;off++){
+    for(const sl of S.plan[off]){
+      const m=meal(sl.id);if(!m)continue;
+      for(const [raw,f] of m.items){
+        const id=rid(raw);
+        const target=(sl.mode==="midweek"&&ITEMS[id].f)?mid:main;
+        target[id]=(target[id]||0)+f;
+      }
+    }
+  }
+  const pk=o=>{const r={};for(const id in o){r[id]=Math.max(1,Math.ceil(o[id]-1e-9));}return r;};
+  const M=pk(main),R=pk(mid);
+  // split pantry items from buy items
+  const buy={},pan={};
+  for(const id in M){if(ITEMS[id].pan){pan[id]=M[id];}else buy[id]=M[id];}
+  const extras={};
+  for(const id in S.extras){if(S.extras[id]>0)extras[id]=S.extras[id];}
+  for(const id in S.need){if(S.need[id]&&pan[id])buy[id]=(buy[id]||0)+1;}
+  const lines=[];
+  const add=(id,q,src)=>{if(S.have[id]&&src!=="x")return;lines.push({id,q,src,cost:q*price(id)});};
+  for(const id in buy)add(id,buy[id],"m");
+  for(const id in extras){
+    // an item needed by a meal and also added as a basic: sum quantities into one line
+    const ex=lines.find(l=>l.id===id&&l.src==="m");
+    if(ex){ex.q+=extras[id];ex.cost=ex.q*price(id);}else add(id,extras[id],"x");
+  }
+  for(const c of S.custom){lines.push({id:"c:"+c.id,q:c.q,src:"c",custom:c,cost:c.q*c.p});}
+  const run2=[];
+  for(const id in R){if(!S.have[id])run2.push({id,q:R[id],src:"r",cost:R[id]*price(id)});}
+  const panList=Object.keys(pan).filter(id=>!S.need[id]);
+  const panNeed=Object.keys(pan).filter(id=>S.need[id]);
+  const tot=a=>a.reduce((s,l)=>s+l.cost,0);
+  const homeCost=[...lines,...run2].filter(l=>l.src!=="c"&&ITEMS[l.id].s==="home").reduce((s,l)=>s+l.cost,0);
+  const tax=homeCost*(S.taxRate/100);
+  const all=tot(lines)+tot(run2);
+  return {lines,run2,panList,panNeed,main:tot(lines),mid:tot(run2),home:homeCost,tax,food:all-homeCost,total:all+tax};
+}
+function mealCost(m){return m.items.reduce((s,[raw,f])=>s+f*price(rid(raw)),0);}
+function freezeCount(){let n=0;for(let o=0;o<7;o++)for(const sl of S.plan[o])if(sl.mode==="freeze"&&hasFresh(sl.id))n++;return n;}
+function hasFresh(mid){const m=meal(mid);return m&&m.items.some(([r])=>ITEMS[rid(r)].f);}
+function weekSpent(){const cut=Date.now()-7*864e5;return S.log.filter(e=>new Date(e.d).getTime()>=cut).reduce((s,e)=>s+e.amt,0);}
+
+/* ========= RENDER ========= */
+function render(){
+  const y=window.scrollY;
+  const C=compute();
+  renderTop(C);renderTabs();
+  const el=$("#main");
+  el.innerHTML=S.tab==="menu"?viewMenu(C):S.tab==="plan"?viewPlan(C):S.tab==="list"?viewList(C):viewTrip(C);
+  renderSheet();
+  window.scrollTo(0,y);
+}
+function renderTop(C){
+  const pct=Math.min(100,C.total/S.budget*100);
+  const cls=C.total>S.budget?"bad":C.total>S.budget*.9?"warn":"";
+  const left=S.budget-C.total;
+  $("#top").innerHTML=`<div class="row"><h1>Dakota's Groceries</h1><span class="sp"></span><span class="mute">Shop ${esc(dayLabel(0))}</span></div>
+  <div class="meter ${cls}"><i style="width:${pct}%"></i></div>
+  <div class="row mute"><span><b style="color:var(--ink)">${money(C.total)}</b> planned of ${money(S.budget)}</span><span class="sp"></span><span>${left>=0?money(left)+" left":money(-left)+" over"}</span></div>`;
+}
+function renderTabs(){
+  const T=[["menu","📖","Menu"],["plan","🗓","Plan"],["list","🛒","List"],["trip","🧾","Trip"]];
+  $("#tabs").innerHTML=T.map(([k,i,l])=>`<button data-act="tab" data-v="${k}" class="${S.tab===k?"on":""}"><b>${i}</b>${l}</button>`).join("");
+}
+
+function viewPlan(C){
+  const fc=freezeCount();
+  let h=`<div class="card"><div class="row"><div><b>Shopping day</b><div class="mute">Fresh protein must be cooked within 72 hours of this trip.</div></div><span class="sp"></span>
+   <select data-act="shopday">${[4,5,6,0,1,2,3].map(d=>`<option value="${d}" ${d===S.shopDay?"selected":""}>${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d]}</option>`).join("")}</select></div>
+   <div class="row" style="margin-top:10px"><div class="mute">Ground beef</div><span class="sp"></span>
+   <div class="chips"><button class="chip ${S.beef==="gbs"?"on":""}" data-act="beef" data-v="gbs">Angus sirloin ${fmtP("gbs")}</button><button class="chip ${S.beef==="gb80"?"on":""}" data-act="beef" data-v="gb80">80/20 ${fmtP("gb80")}</button></div></div>
+   <div class="row" style="margin-top:10px"><button class="btn sec sm" data-act="tab" data-v="menu">+ Pick meals from the menu</button><button class="btn ghost sm" data-act="clearplan">Clear</button></div></div>`;
+  if(fc>S.freezeCap)h+=`<div class="note warn">${fc} meals are set to freeze but his top freezer fits about ${S.freezeCap} flat single-meal portions. Switch some to <b>Mid-week run</b>.</div>`;
+  for(let off=0;off<7;off++){
+    const slots=S.plan[off];
+    const late=off>=FRESH_DAYS;
+    h+=`<div class="card"><div class="row"><h3>${esc(dayLabel(off))}</h3>${off===0?'<span class="tag">shopping day</span>':""}<span class="sp"></span>${late?'<span class="chip ice">past 72 hours</span>':'<span class="chip on" style="min-height:26px;padding:2px 9px;font-size:12px">fresh window</span>'}</div>`;
+    if(!slots.length)h+=`<div class="mute" style="margin:8px 0">Nothing planned. Backup meal day.</div>`;
+    slots.forEach((sl,i)=>{
+      const m=meal(sl.id);if(!m)return;
+      const fresh=hasFresh(sl.id);
+      h+=`<div class="meal">${art(m,true)}<div style="flex:1;min-width:0"><div class="nm">${esc(m.n)}</div>
+       <div class="mute">${m.m} min · ~${money(mealCost(m))}${m.g?` · ${m.k} kcal, ${m.g} g protein`:""} · ${kind(m)}</div>
+       ${tagsOf(m).length?`<div class="chips" style="margin-top:4px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}
+       <div class="row" style="margin-top:6px"><span class="mute">Cook on</span><select data-act="movemeal" data-d="${off}" data-i="${i}" style="min-height:34px;padding:4px 8px">${[0,1,2,3,4,5,6].map(o=>`<option value="${o}" ${o===off?"selected":""}>${esc(dayLabel(o))}</option>`).join("")}</select><span class="mute">${esc(LANES.find(x=>x[0]===lane(m))[1])}</span></div>
+       ${fresh?`<div class="chips" style="margin-top:6px">
+         <button class="chip ${sl.mode==="fresh"?"on":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="fresh">Cook fresh</button>
+         <button class="chip ${sl.mode==="freeze"?"on ice":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="freeze">Freeze it</button>
+         <button class="chip ${sl.mode==="midweek"?"on":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="midweek">Mid-week run</button></div>
+         ${late&&sl.mode==="fresh"?'<div class="mute" style="color:var(--warn);margin-top:4px">Cooking fresh here breaks the 72 hour rule.</div>':""}`:""}
+       </div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip love ${loved(sl.id)?"on":""}" data-act="love" data-id="${sl.id}" aria-label="Love" style="justify-content:center;min-width:44px">♥</button><button class="btn ghost sm" data-act="rm" data-d="${off}" data-i="${i}" aria-label="Remove">✕</button></div></div>`;
+    });
+    h+=`<button class="btn sec sm" style="margin-top:8px" data-act="pick" data-d="${off}">+ Add meal</button></div>`;
+  }
+  return h;
+}
+
+function itemRow(l,run){
+  const key=run+":"+l.id;
+  const done=!!S.checked[key];
+  const isC=l.src==="c";
+  const name=isC?esc(l.custom.n):esc(ITEMS[l.id].n);
+  const p=isC?l.custom.p:price(l.id);
+  const est=!isC&&isEst(l.id);
+  return `<div class="item ${done?"done":""}"><input type="checkbox" ${done?"checked":""} data-act="chk" data-k="${key}" aria-label="Got it"><div class="t">${name}${l.q>1?` <span class="tag">× ${l.q}</span>`:""}</div>
+   <button class="p ${est?"est":""}" data-act="editp" data-id="${isC?l.custom.id:l.id}" data-c="${isC?1:0}">${est?"~":""}${money(l.cost)}</button>
+   ${l.src==="m"?`<button class="btn ghost sm" data-act="have" data-id="${l.id}" title="I already have this">Have</button>`:""}${isC?`<button class="btn ghost sm" data-act="delc" data-id="${l.custom.id}">✕</button>`:""}</div>`;
+}
+function groupBySection(lines){
+  const g={};for(const l of lines){const s=l.src==="c"?"grocery":ITEMS[l.id].s;(g[s]=g[s]||[]).push(l);}return g;
+}
+function chipGroup(title,arr,note){
+  return `<div class="card"><h3>${title}</h3>${note?`<div class="mute" style="margin:2px 0 8px">${note}</div>`:""}<div class="chips">${arr.map(([id,label])=>{
+    const on=(S.extras[id]||0)>0;
+    return `<button class="chip ${on?"on":""}" data-act="extra" data-id="${id}">${on?"✓ ":"+ "}${esc(label||ITEMS[id].n)} · ${fmtP(id)}</button>`;}).join("")}</div></div>`;
+}
+function ago(id){const d=S.last[id];if(!d)return "";const n=Math.round((Date.now()-new Date(d).getTime())/864e5);return n<=0?"bought today":`bought ${n} day${n===1?"":"s"} ago`;}
+
+function viewList(C){
+  let h="";
+  if(C.total>S.budget){
+    const tips=[];
+    if(S.beef==="gbs"&&C.lines.some(l=>l.id==="gbs"))tips.push(`Switch ground beef to 80/20 and save about ${money((price("gbs")-price("gb80"))*(C.lines.find(l=>l.id==="gbs").q))}.`);
+    const back=BACKUP.filter(([id])=>S.extras[id]>0).length;
+    if(back)tips.push("Drop a backup-stash item or two.");
+    tips.push("Trim a meal from the plan, or mark things you already have.");
+    h+=`<div class="note bad"><b>${money(C.total-S.budget)} over budget.</b><br>${tips.join(" ")}</div>`;
+  }
+  h+=`<div class="card"><div class="row"><div><div class="mute">Estimated checkout</div><div class="big">${money(C.total)}</div></div><span class="sp"></span><div style="text-align:right" class="mute">${money(C.food)} food<br>${money(C.home)} household<br>${money(C.tax)} tax buffer</div></div></div>`;
+  // coffee kit
+  h+=`<div class="card ${KIT.some(([id])=>!S.extras[id])?"flag":""}"><h3>☕ Coffee kit</h3><div class="mute" style="margin:2px 0 8px">Running out sent him on extra trips. Check all three before you leave.</div>`;
+  h+=KIT.map(([id,l])=>{const on=S.extras[id]>0;return `<div class="item"><input type="checkbox" ${on?"checked":""} data-act="extra" data-id="${id}" aria-label="Add"><div class="t">${esc(l)}<div class="mute">${esc(ago(id))}</div></div><span class="est">${fmtP(id)}</span></div>`;}).join("");
+  h+=`</div>`;
+  h+=chipGroup("🍎 Fruit & salad",FRUIT,"Fruit is the easy win. Veggies go inside dishes, plus a salad kit.");
+  h+=chipGroup("🥛 Weekly basics",BASICS);
+  h+=chipGroup("🍜 Backup stash",BACKUP,"Cheap fallback for the gap days. A planned week should need fewer of these.");
+  h+=chipGroup("🧻 Household",HOUSE,"Counts against the $75 too.");
+  // main list
+  const g=groupBySection(C.lines);
+  h+=`<div class="card"><div class="row"><h2>Main trip · ${esc(dayLabel(0))}</h2><span class="sp"></span><b>${money(C.main)}</b></div>`;
+  if(!C.lines.length)h+=`<div class="mute">Pick meals on the Menu tab and the list builds itself.</div>`;
+  for(const [k,label] of SECTIONS){if(!g[k])continue;
+    h+=`<div class="mute" style="margin-top:10px;font-weight:600">${label}</div>`+g[k].map(l=>itemRow(l,"m")).join("");}
+  h+=`<div style="margin-top:10px" class="row"><input type="text" id="cname" placeholder="Add something else"><input type="number" id="cprice" placeholder="$" step="0.01" style="width:84px"><button class="btn sm" data-act="addc">Add</button></div></div>`;
+  if(C.panNeed.length||C.panList.length){
+    h+=`<details class="card"><summary>Pantry check (${C.panList.length+C.panNeed.length})</summary><div class="mute" style="margin:4px 0 6px">Your meals use these. Tap the ones that are running low and they join the list.</div><div class="chips">`+
+     [...C.panList,...C.panNeed].map(id=>`<button class="chip ${S.need[id]?"on":""}" data-act="need" data-id="${id}">${S.need[id]?"✓ ":""}${esc(ITEMS[id].n)}</button>`).join("")+`</div></details>`;
+  }
+  if(C.run2.length){
+    h+=`<div class="card"><div class="row"><h2>Mid-week run · ${esc(dayLabel(4))}</h2><span class="sp"></span><b>${money(C.mid)}</b></div><div class="mute" style="margin-bottom:6px">Fresh protein for the back half of the week. Buy it the day before you cook it.</div>`+C.run2.map(l=>itemRow(l,"r")).join("")+`</div>`;
+  }
+  const haveIds=Object.keys(S.have).filter(k=>S.have[k]);
+  if(haveIds.length)h+=`<details class="card"><summary>Already have (${haveIds.length})</summary><div class="chips" style="margin-top:6px">${haveIds.map(id=>`<button class="chip" data-act="unhave" data-id="${id}">↩ ${esc(ITEMS[id].n)}</button>`).join("")}</div></details>`;
+  h+=`<div class="row" style="gap:10px"><button class="btn sec full" data-act="copy">Copy list</button><button class="btn sec full" data-act="share">Share</button></div>`;
+  if(UI.msg)h+=`<div class="note">${esc(UI.msg)}</div>`;
+  return h;
+}
+
+function viewTrip(C){
+  const spent=weekSpent();
+  const fc=freezeCount();
+  const mains=S.log.filter(e=>e.type==="main").slice(-8);
+  const maxv=Math.max(S.budget,...S.log.slice(-8).map(e=>e.amt),1);
+  let h=`<div class="card"><h2>Past 7 days</h2><div class="big">${money(spent)} <span class="mute" style="font-size:15px;font-weight:400">of ${money(S.budget)}</span></div>
+   <div class="mute">${spent>S.budget?money(spent-S.budget)+" over this week":money(S.budget-spent)+" of room left"}</div></div>`;
+  if(fc){
+    h+=`<div class="card"><h3>❄️ Freeze tonight (${fc} portion${fc===1?"":"s"})</h3><div class="mute" style="margin:2px 0 6px">Pack each protein as one flat single-meal portion so the small top freezer holds more. Move it to the fridge the night before you cook it.</div>`;
+    for(let o=0;o<7;o++)for(const sl of S.plan[o])if(sl.mode==="freeze"&&hasFresh(sl.id)){const m=meal(sl.id);h+=`<div class="item"><div class="t">${esc(m.n)}<div class="mute">cook ${esc(dayLabel(o))} · thaw ${esc(dayLabel(Math.max(0,o-1)))} night</div></div></div>`;}
+    h+=`</div>`;
+  }
+  if(S.tripDone)h+=`<div class="card flag"><h3>Trip logged</h3><div class="mute" style="margin:2px 0 8px">Keep this week's plan and the freeze checklist until the week is over. When you are ready, start next week's menu.</div><button class="btn full" data-act="newweek">Start next week's menu</button></div>`;
+  h+=`<div class="card"><h2>Log a trip</h2><div class="row"><input type="number" id="amt" step="0.01" placeholder="Total $" style="width:110px"><select id="ttype"><option value="main">Main trip</option><option value="topup">Top-up trip</option></select></div>
+   <input type="text" id="tnote" placeholder="Note, like 'ran out of cream'" style="margin-top:8px">
+   <button class="btn full" style="margin-top:8px" data-act="logtrip">Save trip</button>
+   <div class="mute" style="margin-top:6px">Saving a main trip also marks everything you checked off as bought, so the coffee kit shows how long ago you got it, then clears the checkmarks.</div></div>`;
+  if(S.log.length){
+    h+=`<div class="card"><h3>Recent trips</h3><div class="bars">${S.log.slice(-8).map(e=>`<div style="height:${Math.max(4,e.amt/maxv*100)}%;${e.type==="topup"?"background:var(--warn)":""}"><span>${Math.round(e.amt)}</span></div>`).join("")}</div>
+    <div class="mute" style="margin-top:4px">Green = main trip, amber = top-up.</div>`;
+    h+=S.log.slice().reverse().slice(0,10).map(e=>`<div class="item"><div class="t">${new Date(e.d).toLocaleDateString(undefined,{month:"short",day:"numeric"})} · ${e.type==="topup"?"Top-up":"Main trip"}${e.note?`<div class="mute">${esc(e.note)}</div>`:""}</div><b>${money(e.amt)}</b></div>`).join("")+`</div>`;
+  }
+  h+=`<details class="card"><summary>Settings</summary>
+   <div class="row" style="margin-top:8px"><span>Weekly budget</span><span class="sp"></span><input type="number" id="bud" value="${S.budget}" style="width:90px" data-act="budget"></div>
+   <div class="row" style="margin-top:8px"><span>Tax on household items (%)</span><span class="sp"></span><input type="number" id="trate" value="${S.taxRate}" step="0.1" style="width:90px" data-act="taxrate"></div>
+   <div class="row" style="margin-top:8px"><span>Freezer portions that fit</span><span class="sp"></span><input type="number" id="fcap" value="${S.freezeCap}" style="width:90px" data-act="fcap"></div>
+   <div class="mute" style="margin-top:8px">Prices marked ~ are estimates. Tap any price on the list to correct it and the app remembers it. Prices without ~ came from his Kroger receipts, April to August 2026.</div>
+   <button class="btn ghost sm" style="margin-top:8px" data-act="newweek">Start a new weekly menu</button>
+   <button class="btn ghost sm" style="margin-top:8px" data-act="resetprices">Reset my price edits</button>
+   <button class="btn ghost sm" style="margin-top:8px" data-act="resetall">Erase everything</button></details>`;
+  return h;
+}
+
+/* ========= SHEET (meal picker) ========= */
+function mealCard(m,tag){
+  return `<div class="card" style="margin:8px 0"><div class="row">${art(m,true)}<div style="flex:1;min-width:0"><div class="nm" style="font-weight:600">${esc(m.n)}</div>
+    <div class="mute">${m.m} min · ~${money(mealCost(m))}${m.g?` · ${m.g} g protein`:""} · ${tag||kind(m)}</div>
+    ${tagsOf(m).length?`<div class="chips" style="margin-top:5px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}</div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch"><button class="btn sm" data-act="addmeal" data-id="${m.id}">Add</button><button class="chip love ${loved(m.id)?"on":""}" data-act="love" data-id="${m.id}" style="justify-content:center">♥</button></div></div></div>`;
+}
+function renderSheet(){
+  const el=$("#sheet");
+  if(!UI.sheet){el.innerHTML="";return;}
+  const f=UI.filter;
+  let list=MEALS.filter(m=>!isNo(m.id)&&(f==="All"||(f==="New"?(!m.hf&&!m.fav):f==="Loved"?loved(m.id):f==="Past hits"?m.hf:m.t===f)));
+  list.sort((a,b)=>(a.hf?1:0)-(b.hf?1:0));
+  const sug=f==="All"?(UI.sug||(UI.sug=suggest(3))):[];
+  el.innerHTML=`<div class="sheet" data-act="closesheet"><div data-stop="1"><div class="row"><h2 style="margin:0">Add to ${esc(dayLabel(UI.sheet.d))}</h2><span class="sp"></span><button class="btn ghost sm" data-act="closesheet">Close</button></div>
+   <div class="chips" style="margin:10px 0">${TYPES.map(t=>`<button class="chip ${f===t?"on":""}" data-act="filter" data-v="${t}">${t}</button>`).join("")}</div>
+   ${sug.length?`<div class="row" style="margin-top:4px"><h3>✨ Picked for him</h3><span class="sp"></span><button class="btn ghost sm" data-act="resug">Shuffle</button></div>
+     <div class="mute">Favors his proteins, cheese and bold flavors, and skips types already planned twice.</div>${sug.map(m=>mealCard(m)).join("")}<h3 style="margin-top:14px">All meals</h3>`:""}
+   ${list.map(m=>mealCard(m)).join("")}</div></div>`;
+}
+
+/* ========= MENU ========= */
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const QUOTA={Beef:3,Pork:3,Chicken:2,Turkey:1,Seafood:1,"Snack plate":1};
+function wpick(pool,r){
+  const w=pool.map(m=>(m.hf?1:m.fav?2:3)*(S.rate[m.id]==="love"?4:1));const tot=w.reduce((a,b)=>a+b,0);let x=r()*tot;
+  for(let i=0;i<pool.length;i++){x-=w[i];if(x<=0)return pool[i];}return pool[pool.length-1];
+}
+function genMenu(seed,keep,exclude){
+  const r=rng(seed);const ids=keep.slice();
+  const has=id=>ids.includes(id);
+  const hfCount=()=>ids.filter(i=>meal(i)&&meal(i).hf).length;
+  const take=(type,n)=>{
+    let have=ids.filter(i=>meal(i)&&meal(i).t===type).length;
+    while(have<n){
+      let pool=MEALS.filter(m=>m.t===type&&!has(m.id)&&!isNo(m.id)&&(!exclude.includes(m.id)||loved(m.id))&&!(m.hf&&hfCount()>=2));
+      if(!pool.length)pool=MEALS.filter(m=>m.t===type&&!has(m.id)&&!isNo(m.id));
+      if(!pool.length)break;
+      ids.push(wpick(pool,r).id);have++;
+    }
+  };
+  for(const t in QUOTA)take(t,QUOTA[t]);
+  const wild=MEALS.filter(m=>(m.t==="Beef"||m.t==="Pork")&&!has(m.id)&&!m.hf&&!isNo(m.id)&&!exclude.includes(m.id));
+  if(wild.length&&ids.length<13)ids.push(wpick(wild,r).id);
+  const CHEAP=["ramenglow","velvglow","pizzaup","spudbowl"];
+  while(ids.filter(i=>CHEAP.includes(i)).length<2){const cp=MEALS.filter(m=>CHEAP.includes(m.id)&&!has(m.id)&&!isNo(m.id));if(!cp.length)break;ids.push(wpick(cp,r).id);}
+  const pantryHave=()=>ids.filter(i=>meal(i)&&lane(meal(i))==="pantry").length;
+  while(pantryHave()<3){const pp=MEALS.filter(m=>lane(m)==="pantry"&&!has(m.id)&&!isNo(m.id));if(!pp.length)break;ids.push(wpick(pp,r).id);}
+  // always put up to 2 of his loved meals on the menu
+  const lv=MEALS.filter(m=>loved(m.id)&&!has(m.id)).map(m=>[r(),m]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]).slice(0,Math.max(0,2-ids.filter(i=>loved(i)).length));
+  lv.forEach(m=>ids.push(m.id));
+  return ids;
+}
+function moreMenu(){
+  const r=rng(S.menu.seed*7+S.menu.ids.length);const ids=menuIds();let add=0;
+  while(add<6){const pool=MEALS.filter(m=>!ids.includes(m.id)&&!isNo(m.id)&&(!S.lastPicks.includes(m.id)||loved(m.id)));if(!pool.length)break;const m=wpick(pool,r);S.menu.ids.push(m.id);ids.push(m.id);add++;}
+}
+const menuIds=()=>{const a=S.menu.ids.filter(i=>!isNo(i));planned().forEach(i=>{if(!a.includes(i))a.push(i);});return a;};
+function placeMeal(id,plan){
+  const ln=lane(meal(id));
+  const order=ln==="early"?[0,1,2,3,4,5,6]:ln==="mid"?[2,3,1,4,0,5,6]:[6,5,4,3,2,1,0];
+  let best=order[0];
+  for(const d of order){if(plan[d].length<plan[best].length)best=d;}
+  plan[best].push({id,mode:defMode(best)});
+}
+function totalWith(plan){const old=S.plan;S.plan=plan;const t=compute().total;S.plan=old;return t;}
+function clonePlan(){const o={};for(let i=0;i<7;i++)o[i]=S.plan[i].map(x=>Object.assign({},x));return o;}
+function addCost(id){const a=clonePlan();const base=totalWith(a);placeMeal(id,a);return totalWith(a)-base;}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pickForMe(){
+  const pool=menuIds().filter(id=>meal(id));
+  let best=null,bs=-1e9;
+  for(let t=0;t<250;t++){
+    const sh=shuffle(pool);const pk=[];
+    for(const id of sh){
+      const m=meal(id);if(pk.length>=5)break;
+            if(pk.filter(x=>meal(x).t===m.t).length>=2)continue;
+      pk.push(id);
+    }
+    if(pk.length<5)continue;
+    const plan={0:[],1:[],2:[],3:[],4:[],5:[],6:[]};pk.forEach(id=>placeMeal(id,plan));
+    const tot=totalWith(plan);
+    const nE=pk.filter(x=>lane(meal(x))==="early").length,nP=pk.filter(x=>lane(meal(x))==="pantry").length;
+    const sc=(nP>=2?90:0)+(nE<=3?50:0)+(tot<=S.budget?100:-Math.min(90,(tot-S.budget)*5))+pk.filter(x=>!meal(x).hf).length*3+pk.filter(x=>loved(x)).length*4+pk.filter(x=>meal(x).t==="Beef"||meal(x).t==="Pork").length;
+    if(sc>bs){bs=sc;best=plan;}
+  }
+  if(best)S.plan=best;
+}
+function newWeek(){
+  S.lastPicks=planned();
+  for(let i=0;i<7;i++)S.plan[i]=[];
+  S.extras=Object.assign({},CLONE().extras);S.need={};S.have={};S.checked={};S.tripDone=false;
+  S.menu={seed:(S.menu.seed||1)+1,ids:[]};S.menu.ids=genMenu(S.menu.seed,[],S.lastPicks);
+  S.tab="menu";
+}
+function rateBtns(id){
+  if(isNo(id))return `<button class="chip" data-act="restore" data-id="${id}">↩ Restore</button>`;
+  return `<button class="chip love ${loved(id)?"on":""}" data-act="love" data-id="${id}" aria-pressed="${loved(id)}">♥ ${loved(id)?"Loved":"Love"}</button><button class="chip" data-act="no" data-id="${id}">👎 Not for me</button>`;
+}
+function viewMenu(C){
+  const sel=planned();
+  const f=UI.mf||"All";
+  const ids=f==="Loved"?MEALS.filter(m=>loved(m.id)).map(m=>m.id):f==="Hidden"?MEALS.filter(m=>isNo(m.id)).map(m=>m.id):menuIds().filter(id=>{const m=meal(id);return m&&(f==="All"||m.t===f);});
+  const target=sel.length>=5&&sel.length<=6;
+  let h=`<div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
+   <div class="mute">Tap the meals you want. He eats one or two real meals a day, so 5 or 6 is plenty. Each is a single serving, one pan or pot. Meal prices are the portion you use. The total counts whole packages, since that is what he pays at the register.</div>
+   <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
+   <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>
+   <div class="chips" style="margin-top:10px">${[["All","All"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}">${l}${t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
+  if(C.total>S.budget){
+    const usesBeef=C.lines.some(l=>l.id==="gbs");
+    h+=`<div class="note bad"><b>${money(C.total-S.budget)} over budget.</b> Swap a pricier meal for a cheaper one, or tap Pick for me.${usesBeef?` <button class="btn sm" style="margin-top:6px" data-act="beef" data-v="gb80">Switch to 80/20 beef</button>`:""}</div>`;
+  }
+  if(!ids.length)h+=`<div class="note">${f==="Loved"?"Nothing loved yet. Tap ♥ on a meal he likes and it will keep coming back.":f==="Hidden"?"Nothing hidden. Meals marked Not for me end up here.":"No meals here."}</div>`;
+  ids.sort((a,b)=>LANES.findIndex(l=>l[0]===lane(meal(a)))-LANES.findIndex(l=>l[0]===lane(meal(b))));
+  const nPan=sel.filter(i=>lane(meal(i))==="pantry").length;
+  if(sel.length>=4&&nPan<2&&f!=="Hidden")h+=`<div class="note warn"><b>Save two for the end of the week.</b> You have ${nPan} Freezer &amp; pantry pick${nPan===1?"":"s"}. Two of them keep the last days from becoming gap days.</div>`;
+  let lastLane="";
+  for(const id of ids){
+    const m=meal(id);const on=sel.includes(id);
+    const ln=lane(m);if(ln!==lastLane){const L=LANES.find(x=>x[0]===ln);h+=`<div style="margin:16px 4px 2px"><h3>${L[1]}</h3><div class="mute">${L[2]}</div></div>`;lastLane=ln;}
+        const items=m.items.map(([r,fr])=>ITEMS[rid(r)].n).join(", ");
+    h+=`<div class="card ${on?"sel":""}" style="padding:0;overflow:hidden"><button class="mc" data-act="sel" data-id="${id}" aria-pressed="${on}" style="display:block;padding:0">${art(m)}<span style="display:flex;gap:12px;align-items:flex-start;padding:12px 12px 4px"><span class="ring">${on?"✓":""}</span>
+      <span style="flex:1;min-width:0"><span class="nm" style="display:block;font-weight:700">${esc(m.n)}</span>
+      <span class="mute" style="display:block">${esc(m.t)} · ${kind(m)}${m.g?` · ${m.g} g protein`:""}</span>
+      ${tagsOf(m).length?`<span class="chips" style="margin-top:5px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</span>`:""}</span>
+      <span class="cost" style="white-space:nowrap">${on?"✓ ":""}~${money(mealCost(m))}<span class="mute" style="display:block;font-weight:400;font-size:12px;text-align:right">per meal</span></span></span></button>
+      <div class="row" style="padding:0 12px 12px;align-items:flex-start"><details style="flex:1;min-width:0"><summary class="mute" style="font-weight:500">What's in it</summary><div class="mute" style="margin-top:4px">${esc(items)}</div></details>
+       <div class="chips" style="flex:none">${rateBtns(id)}</div></div></div>`;
+  }
+  h+=`<button class="btn full" data-act="tab" data-v="plan" style="margin-top:6px">Review my week (${sel.length})</button>`;
+  return h;
+}
+
+/* ========= ACTIONS ========= */
+function addMeal(off,id){S.plan[off].push({id,mode:defMode(off)});}
+function listText(C){
+  const out=["Groceries · shop "+dayLabel(0)];
+  const g=groupBySection(C.lines);
+  for(const [k,label] of SECTIONS){if(!g[k])continue;out.push("",label.toUpperCase());g[k].forEach(l=>out.push("[ ] "+(l.src==="c"?l.custom.n:ITEMS[l.id].n)+(l.q>1?" x"+l.q:"")));}
+  if(C.run2.length){out.push("","MID-WEEK RUN · "+dayLabel(4));C.run2.forEach(l=>out.push("[ ] "+ITEMS[l.id].n+(l.q>1?" x"+l.q:"")));}
+  out.push("","Estimated total "+money(C.total));
+  return out.join("\n");
+}
+function toast(m){UI.msg=m;render();setTimeout(()=>{UI.msg="";render();},2500);}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  if(b.classList.contains("sheet")&&e.target!==b)return;
+  const a=b.dataset.act,d=b.dataset;
+  if(a==="closesheet"){if(b.classList.contains("sheet")&&e.target.closest("[data-stop]")&&e.target!==b)return;UI.sheet=null;return render();}
+  if(a==="tab"){S.tab=d.v;save();window.scrollTo(0,0);return render();}
+  if(a==="beef"){S.beef=d.v;}
+  else if(a==="sel"){const id=d.id;if(planned().includes(id)){for(let i=0;i<7;i++)S.plan[i]=S.plan[i].filter(x=>x.id!==id);}else placeMeal(id,S.plan);}
+  else if(a==="love"){if(loved(d.id))delete S.rate[d.id];else S.rate[d.id]="love";}
+  else if(a==="no"){S.rate[d.id]="no";for(let i=0;i<7;i++)S.plan[i]=S.plan[i].filter(x=>x.id!==d.id);S.menu.ids=S.menu.ids.filter(x=>x!==d.id);}
+  else if(a==="restore"){delete S.rate[d.id];}
+  else if(a==="pfm"){pickForMe();}
+  else if(a==="mshuffle"){S.menu.seed=(S.menu.seed||1)+1;S.menu.ids=genMenu(S.menu.seed,planned(),S.lastPicks);}
+  else if(a==="mmore"){moreMenu();}
+  else if(a==="mfilter"){UI.mf=d.v;return render();}
+  else if(a==="newweek"){newWeek();window.scrollTo(0,0);}
+  else if(a==="clearplan"){for(let i=0;i<7;i++)S.plan[i]=[];}
+  else if(a==="pick"){UI.sheet={d:+d.d};UI.sug=null;return render();}
+  else if(a==="resug"){UI.sug=suggest(3);return render();}
+  else if(a==="filter"){UI.filter=d.v;return render();}
+  else if(a==="addmeal"){addMeal(UI.sheet.d,d.id);UI.sheet=null;UI.sug=null;}
+  else if(a==="rm"){S.plan[+d.d].splice(+d.i,1);}
+  else if(a==="mode"){S.plan[+d.d][+d.i].mode=d.v;}
+  else if(a==="extra"){const id=d.id;if(b.type==="checkbox"){S.extras[id]=b.checked?1:0;}else S.extras[id]=(S.extras[id]||0)>0?0:1;}
+  else if(a==="need"){S.need[d.id]=!S.need[d.id];}
+  else if(a==="have"){S.have[d.id]=true;}
+  else if(a==="unhave"){delete S.have[d.id];}
+  else if(a==="chk"){S.checked[d.k]=b.checked;}
+  else if(a==="editp"){
+    if(d.c==="1"){const c=S.custom.find(x=>x.id===d.id);const v=prompt("Price for "+c.n,c.p);if(v!==null&&!isNaN(parseFloat(v)))c.p=parseFloat(v);}
+    else{const v=prompt("Price for one: "+ITEMS[d.id].n,price(d.id));if(v!==null&&!isNaN(parseFloat(v)))S.prices[d.id]=parseFloat(v);}
+  }
+  else if(a==="addc"){const n=$("#cname").value.trim();const p=parseFloat($("#cprice").value)||0;if(!n)return;S.custom.push({id:String(Date.now()),n,p,q:1});}
+  else if(a==="delc"){S.custom=S.custom.filter(c=>c.id!==d.id);}
+  else if(a==="copy"){const t=listText(compute());(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("List copied.")).catch(()=>toast("Could not copy. Use Share instead."));return;}
+  else if(a==="share"){const t=listText(compute());if(navigator.share){navigator.share({text:t}).catch(()=>{});}else if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast("List copied."));}return;}
+  else if(a==="logtrip"){
+    const amt=parseFloat($("#amt").value);if(!(amt>0))return;
+    const type=$("#ttype").value;
+    S.log.push({d:new Date().toISOString(),amt,type,note:$("#tnote").value.trim()});
+    if(type==="main"){S.tripDone=true;const now=new Date().toISOString();for(const k in S.checked){if(S.checked[k]){const id=k.slice(k.indexOf(":")+1);if(ITEMS[id])S.last[id]=now;}}S.checked={};}
+  }
+  else if(a==="resetprices"){S.prices={};}
+  else if(a==="resetall"){if(confirm("Erase the plan, prices and trip history on this device?")){S=JSON.parse(JSON.stringify(DEF));}}
+  save();render();
+});
+document.addEventListener("change",e=>{
+  const t=e.target,a=t.dataset&&t.dataset.act;if(!a)return;
+  if(a==="shopday"){S.shopDay=+t.value;}
+  else if(a==="budget"){const v=parseFloat(t.value);if(v>0)S.budget=v;}
+  else if(a==="taxrate"){const v=parseFloat(t.value);if(v>=0)S.taxRate=v;}
+  else if(a==="movemeal"){const d=+t.dataset.d,i=+t.dataset.i,nd=+t.value;if(nd!==d){const sl=S.plan[d].splice(i,1)[0];sl.mode=defMode(nd);S.plan[nd].push(sl);}}
+  else if(a==="fcap"){const v=parseInt(t.value,10);if(v>=0)S.freezeCap=v;}
+  else return;
+  save();render();
+});
+if(!S.menu||!Array.isArray(S.menu.ids)||!S.menu.ids.length){S.menu={seed:(Date.now()%90000)+1,ids:[]};S.menu.ids=genMenu(S.menu.seed,planned(),S.lastPicks||[]);save();}
+render();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http")){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+</script>
 </body>
 </html>
