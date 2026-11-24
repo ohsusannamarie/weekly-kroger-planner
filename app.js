@@ -30,7 +30,17 @@ const products = {
   potato: ['Idahoan roasted garlic mashed potatoes', 'Pantry', 550, 4, 'cups'],
   coffee: ['Café Bustelo Dulce de Leche coffee', 'Pantry', 1050, 1, 'bag'],
   tp: ['Simple Truth recycled toilet paper', 'Household', 750, 12, 'rolls'],
-  dish: ['Dawn Platinum dish soap', 'Household', 350, 13, 'fl oz']
+  dish: ['Dawn Platinum dish soap', 'Household', 350, 13, 'fl oz'],
+  ham: ['Honey ham slices', 'Dairy & deli', 450, 8, 'oz'],
+  frozenMeatballs: ['Fully cooked frozen beef meatballs', 'Frozen', 650, 16, 'oz'],
+  frozenPeppers: ['Frozen pepper and onion blend', 'Frozen', 250, 14, 'oz'],
+  corn: ['Frozen sweet corn', 'Frozen', 150, 12, 'oz'],
+  bbq: ['Honey barbecue sauce', 'Pantry', 275, 18, 'oz'],
+  teriyaki: ['Teriyaki sauce', 'Pantry', 400, 20, 'fl oz'],
+  hotSauce: ['Hot sauce', 'Pantry', 250, 5, 'fl oz'],
+  ranch: ['Ranch seasoning packet', 'Pantry', 200, 1, 'oz'],
+  potatoLoose: ['Russet potato', 'Produce', 100, 1, 'each'],
+  swiss: ['Sliced Swiss cheese', 'Dairy & deli', 280, 6, 'oz']
 };
 const recipes = {
   beefBowl: { name:'Sweet chili beef & green bean bowl', inspired:true, before:2, time:'20 min', uses:{beef:6,onion:.25,beans:4,chili:1,rice:2}, steps:'Start rice. Brown beef with chopped onion to 160°F. Cook green beans as directed, then toss with beef and sweet chili sauce.' },
@@ -45,6 +55,26 @@ const recipes = {
   ramen: { name:'Sweet chili edamame ramen', reserve:true, time:'12 min', uses:{ramen:1,beans:4,edamame:5,chili:1}, steps:'Cook ramen and frozen vegetables as directed. Stir together with sweet chili sauce to taste.' },
   freezerRice: { name:'Sweet chili green bean & edamame rice bowl', reserve:true, time:'20 min', uses:{rice:2,beans:4,edamame:6,chili:1}, steps:'Cook fresh jasmine rice. Cook green beans and a generous portion of shelled edamame as directed. Toss with sweet chili sauce.' }
 };
+// Original recipe ideas based on the same favorite flavors, proteins and shortcuts.
+Object.assign(recipes, {
+  meatloaf: { name:'BBQ cheddar mini meatloaf', idea:true, before:2, time:'25 min', flavor:'Sweet barbecue glaze, melty cheddar and garlic mash.', uses:{beef:6,onion:.25,bbq:1,cheese:1,potato:1,beans:3}, steps:'Mix 6 oz beef with finely chopped onion, cheddar, salt and pepper. Shape into a flat mini loaf. Brush with BBQ sauce and bake at 425°F until the center reaches 160°F. Make one mash cup and cook the green beans as directed.' },
+  burgerRice: { name:'Bacon cheeseburger rice skillet', idea:true, before:2, time:'20 min', flavor:'Cheddar, smoky bacon and sweet-hot beef over fresh rice.', uses:{beef:5,bacon:.5,cheese:1,onion:.25,rice:2,bbq:1,hotSauce:.2}, steps:'Start the rice cooker. Brown 5 oz beef with onions to 160°F. Stir in bacon, BBQ sauce and a few dashes of hot sauce. Spoon over rice and melt cheddar on top.' },
+  beefMelt: { name:'Crispy mushroom-Swiss beef melt', idea:true, before:2, time:'20 min', flavor:'Browned mushrooms and Swiss in a crisp flour tortilla.', uses:{beef:5,mushroom:3,swiss:1,tortillas:2,onion:.25,hotSauce:.2}, steps:'Sauté mushrooms and onion. Add 5 oz beef and cook to 160°F. Fold the filling and Swiss into tortillas and toast in the same skillet. Add hot sauce to taste.' },
+  bbqChop: { name:'Smoky BBQ pork chop & garlic mash', idea:true, before:3, time:'20 min', flavor:'Glazed pork, roasted-garlic potatoes and buttery green beans.', uses:{pork:1,bbq:1,potato:1,beans:4,butter:.5}, steps:'Pan-sear the chop to 145°F, brush with BBQ sauce and rest three minutes. Make one garlic mash cup and cook the green beans as directed. Add a little butter to the beans.' },
+  teriyakiChop: { name:'Teriyaki pork & peppers rice bowl', idea:true, before:3, time:'25 min', flavor:'Savory-sweet pork and blistered peppers over jasmine rice.', uses:{pork:1,teriyaki:1.5,frozenPeppers:4,rice:2}, steps:'Start the rice. Pan-sear the chop to 145°F and rest three minutes. Cook peppers and onions as directed and toss with teriyaki sauce. Slice the pork and serve over rice.' },
+  hamSwiss: { name:'Honey ham, mushroom & Swiss melt', idea:true, before:3, time:'15 min', flavor:'Sweet ham, savory mushrooms and bubbling Swiss.', uses:{ham:4,mushroom:3,swiss:1,tortillas:2}, steps:'Sauté mushrooms in a skillet. Fold them into tortillas with 4 oz sliced honey ham and Swiss. Toast until crisp and the cheese melts. Follow the ham package storage instructions.' },
+  hamPotato: { name:'Cheddar-stuffed honey ham potato', idea:true, before:3, time:'15 min', flavor:'Loaded baked potato with ham, cheddar and smoky bacon.', uses:{ham:4,potatoLoose:1,cheese:1,bacon:.5,hotSauce:.2}, steps:'Pierce and microwave the potato until tender. Split it and add chopped honey ham, cheddar and bacon bits. Heat until the cheese melts. Add a little hot sauce.' },
+  spicyCorn: { name:'Smoky cheddar corn quesadilla', idea:true, time:'15 min', flavor:'Toasted tortillas with sweet corn, smoky bacon and cheddar.', uses:{tortillas:2,corn:3,cheese:2,bacon:.5,hotSauce:.2,edamame:3}, steps:'Cook the corn and edamame as directed. Fold corn, bacon bits and cheddar into two small tortillas and toast until crisp. Serve with the edamame and hot sauce.' },
+  ranchPasta: { name:'Creamy bacon-ranch green bean pasta', idea:true, time:'20 min', flavor:'A splash of cream, tangy ranch and crispy bacon flavor.', uses:{spaghetti:2,cream:2,bacon:.75,ranch:.15,beans:3,edamame:3}, steps:'Cook spaghetti and frozen vegetables. Drain, then stir a splash of cream, a little ranch seasoning and bacon bits into the pot. Toss with the pasta and vegetables. Follow package storage instructions for cream and bacon.' },
+  cornRice: { name:'Cheesy hot-sauce corn & edamame rice', idea:true, time:'20 min', flavor:'Buttery sweet corn, melted cheddar and a hot-sauce kick.', uses:{rice:2,corn:3,edamame:5,cheese:1,hotSauce:.25,butter:.5}, steps:'Make fresh rice and cook corn and edamame as directed. Stir together with a little butter, shredded cheddar and hot sauce.' },
+  teriyakiMeatballs: { name:'Sticky teriyaki meatball bowls', idea:true, reserve:true, time:'20 min', flavor:'Glossy meatballs, peppers and fresh jasmine rice.', uses:{frozenMeatballs:5,frozenPeppers:4,teriyaki:1.5,rice:2}, steps:'Start the rice. Heat 5 oz frozen meatballs and the peppers as directed on their packages. Stir in teriyaki sauce and pile everything over the rice.' },
+  bbqMeatballs: { name:'Honey BBQ meatballs & roasted-garlic mash', idea:true, reserve:true, time:'15 min', flavor:'Sweet, smoky meatballs with garlic potatoes and green beans.', uses:{frozenMeatballs:5,bbq:1.5,potato:1,beans:4}, steps:'Heat 5 oz frozen meatballs and green beans as directed. Coat the hot meatballs with BBQ sauce. Make one mash cup and serve together.' },
+  pepperPasta: { name:'Roasted-garlic meatball & pepper spaghetti', idea:true, reserve:true, time:'20 min', flavor:'Savory tomato sauce, meatballs and sweet peppers.', uses:{frozenMeatballs:5,spaghetti:2,pastaSauce:4,frozenPeppers:4}, steps:'Boil spaghetti. Heat frozen meatballs and peppers as directed, then toss with the pasta and roasted-garlic sauce. Use an unopened jar or a portion frozen when the jar was opened.' },
+  shrimpCorn: { name:'Hot honey-style shrimp & corn rice bowl', idea:true, reserve:true, time:'20 min', flavor:'Sweet heat, shrimp and pops of golden corn.', uses:{shrimp:5,rice:2,corn:4,chili:1,hotSauce:.2,edamame:3}, steps:'Thaw 5 oz cooked shrimp in the refrigerator. Make fresh rice and cook the corn and edamame as directed. Toss with sweet chili and a few dashes of hot sauce, then add shrimp to warm through.' },
+  edamameTacos: { name:'Sweet heat edamame & pepper tacos', idea:true, reserve:true, time:'15 min', flavor:'Seared peppers and edamame in crisp, sweet-spicy tacos.', uses:{edamame:6,frozenPeppers:4,tortillas:2,chili:1,hotSauce:.2}, steps:'Cook the frozen edamame and peppers as directed. Toss with sweet chili and hot sauce and tuck into toasted tortillas. Keep tortillas frozen until needed if the label calls for it.' },
+  teriyakiNoodles: { name:'Teriyaki shrimp & pepper ramen', idea:true, reserve:true, time:'15 min', flavor:'Saucy noodles, peppers and shrimp in one bowl.', uses:{shrimp:5,ramen:1,frozenPeppers:4,teriyaki:1.5}, steps:'Thaw 5 oz cooked shrimp in the refrigerator. Cook ramen and the pepper blend as directed. Drain noodles, toss with teriyaki and peppers, then warm shrimp through.' }
+});
+
 const starterMeals = ['beefBowl','ragu','chop','quesadilla','shells','pizza','shrimpBowl'];
 const starterPacks = {apple:1,banana:2,yogurt:2,milk:1,tp:1,dish:1};
 const key = 'weekly-kroger-planner-v1';
@@ -66,7 +96,7 @@ function nextFriday() {
   return isoDate(today);
 }
 function initial() {
-  return {start:nextFriday(), limit:7500, tax:70, meals:[...starterMeals], packs:{...starterPacks},
+  return {start:nextFriday(), limit:7500, tax:70, meals:Array(7).fill(''), packs:{...starterPacks},
     prices:{}, stocked:{}, checked:{}, extras:[]};
 }
 function restore() {
@@ -104,18 +134,82 @@ function lines() {
   });
   return rows.concat(state.extras.map(row => ({...row,count:1,pack:'custom item',price:state.prices[row.id] ?? row.price,added:true})));
 }
+const menuSections = [
+  {id:'early', heading:'Cook early', limit:4, includes:meal=>!!meal.before},
+  {id:'flex', heading:'Midweek', limit:3, includes:meal=>!meal.before && !meal.reserve},
+  {id:'reserve', heading:'Freezer & pantry', limit:4, includes:meal=>!!meal.reserve}
+];
+let menuFilter = 'all';
+const recipeEntries = Object.entries(recipes);
+
+function weeklyPicks(entries, limit, week) {
+  const ideas = entries.filter(([,recipe])=>recipe.idea);
+  const classics = entries.filter(([,recipe])=>!recipe.idea);
+  const rotate = (list, shift, count)=>Array.from({length:Math.min(list.length,count)},(_,i)=>list[(i+shift)%list.length]);
+  const first = ideas[0]?.[1];
+  const newPicks = first?.before
+    ? ['beef','pork','ham'].flatMap(sku=>rotate(ideas.filter(([,recipe])=>recipe.uses[sku]),week,1))
+    : rotate(ideas,week,limit-1);
+  return [...newPicks,...rotate(classics,week,1)];
+}
+function openDay(recipe) {
+  const order = recipe.reserve ? [5,6,3,4,0,1,2] : recipe.before
+    ? (recipe.before===3 ? [2,1,0] : [0,1]) : [3,4,2,0,1];
+  return order.find(day=>!state.meals[day]);
+}
+function renderMenu() {
+  const week = Math.floor(Date.parse(state.start)/604800000);
+  $('menu-count').textContent = state.meals.filter(Boolean).length + ' of 7 meals picked';
+  $('menu-cards').innerHTML = menuSections.filter(section=>['all','full',section.id].includes(menuFilter)).map(section=>{
+    const entries = recipeEntries.filter(([,recipe])=>section.includes(recipe));
+    const displayed = menuFilter === 'all' ? weeklyPicks(entries, section.limit, week) : entries;
+    return `<section class="menu-section" aria-labelledby="menu-${section.id}"><h3 id="menu-${section.id}">${section.heading}</h3><div class="menu-grid">${displayed.map(([id,recipe])=>{
+      const selected = state.meals.indexOf(id);
+      const date = selected>=0 ? weekday.format(dateAt(state.start,selected)) : '';
+      const open = openDay(recipe) !== undefined;
+      const kind = recipe.idea ? 'New idea' : recipe.inspired ? 'HelloFresh-inspired' : 'Familiar pick';
+      return `<article class="meal-card${date?' selected':''}"><h4>${escape(recipe.name)}</h4>${recipe.flavor?`<p class="muted flavor">${escape(recipe.flavor)}</p>`:''}
+        <p class="muted menu-option-time">${recipe.time} · ${kind}</p>
+        <details><summary>Ingredients</summary><p>${Object.keys(recipe.uses).map(sku=>escape(products[sku][0])).join(' · ')}</p></details>
+        <button id="pick-${id}" type="button" data-pick="${id}"${!date && !open?' aria-disabled="true"':''} aria-label="${date?'Remove':'Pick'} ${escape(recipe.name)}${date?' from '+date:''}">${date?'Remove · '+date:open?'Pick meal':'No day open'}</button></article>`;
+    }).join('')}</div></section>`;
+  }).join('');
+}
+$('weekly-menu').addEventListener('click',event=>{
+  const {filter,pick} = event.target.dataset;
+  if (filter) {
+    menuFilter = filter;
+    for (const button of $('weekly-menu').querySelectorAll('[data-filter]')) {
+      button.setAttribute('aria-pressed',String(button.dataset.filter===filter));
+    }
+    $('menu-status').textContent = '';
+    renderMenu();
+  } else if (pick) {
+    const existing = state.meals.indexOf(pick);
+    const day = existing>=0 ? existing : openDay(recipes[pick]);
+    if (day===undefined) {
+      $('menu-status').textContent = 'Free up a suitable day in your plan to pick this meal.';
+      return;
+    }
+    setMeal(day,existing>=0?'':pick);
+    $('menu-status').textContent = `${recipes[pick].name} ${existing>=0?'removed from':'added to'} ${weekday.format(dateAt(state.start,day))}.`;
+    $('pick-'+pick)?.focus({preventScroll:true});
+  }
+});
+
 function renderDays() {
   $('days').innerHTML = state.meals.map((id, index) => {
     const date = dateAt(state.start,index);
     const meal = recipes[id];
-    const options = Object.entries(recipes).map(([value,{name}]) => `<option value="${value}"${value===id?' selected':''}>${escape(name)}</option>`).join('');
+    const options = menuSections.map(section=>`<optgroup label="${section.heading}">${recipeEntries.filter(([,recipe])=>section.includes(recipe))
+      .map(([value,{name}])=>`<option value="${value}"${value===id?' selected':''}>${escape(name)}</option>`).join('')}</optgroup>`).join('');
     const warning = meal?.before && index >= meal.before
-      ? '<p class="warning">Cook this earlier, or freeze the raw portion on shopping day and thaw it in the fridge.</p>' : '';
+      ? `<p class="warning">${meal.uses.ham ? 'Plan this earlier and follow the ham package storage directions.' : 'Cook this earlier, or freeze the raw portion on shopping day and thaw it in the fridge.'}</p>` : '';
     return `<div class="day">
       <div class="dateline"><strong>${weekday.format(date)}</strong><small>${monthDay.format(date)}</small>${index>=5?'<span class="reserve">Reserve</span>':''}</div>
       <div><label class="sr" for="meal-${index}">Meal for ${weekday.format(date)} ${monthDay.format(date)}</label>
       <select id="meal-${index}" data-day="${index}"><option value="">Choose a meal</option>${options}</select>
-      ${meal ? `<details><summary>${meal.time}${meal.inspired?' · HelloFresh-inspired':''} · How to cook</summary><p>${escape(meal.steps)}</p></details>` : ''}${warning}</div>
+      ${meal ? `<details><summary>${meal.time}${meal.inspired?' · HelloFresh-inspired':''} · How to cook</summary><p>${escape(meal.steps)}</p>${meal.idea?`<p class="recipe-items"><strong>For one serving:</strong> ${Object.entries(meal.uses).map(([sku,qty])=>`${qty} ${products[sku][4]==='each'?'':products[sku][4]+' '}${escape(products[sku][0])}`).join(' · ')}</p>`:''}</details>` : ''}${warning}</div>
     </div>`;
   }).join('');
   const reserves = state.meals.slice(5).filter(id => recipes[id]?.reserve).length;
@@ -124,6 +218,7 @@ function renderDays() {
     ? `${planned}/7 meals planned · Last two days covered with freezer or pantry meals.`
     : `${planned}/7 meals planned · Pick ${2-reserves} more freezer or pantry ${reserves===1?'meal':'meals'} for the last two days.`;
   $('coverage').classList.toggle('needs',reserves<2);
+  renderMenu();
 }
 function summary(rows) {
   const due = rows.filter(r=>!state.stocked[r.id]);
@@ -145,6 +240,7 @@ function renderBudget(rows = lines()) {
   const checked = due.filter(r=>state.checked[r.id]).length;
   $('progress').textContent = due.length ? `${checked} of ${due.length} checked` : 'Nothing to buy yet';
   $('copy').disabled = due.length === checked;
+  $('menu-total').textContent = `${money(total)} estimated · ${money(Math.abs(remaining))} ${remaining<0?'over budget':'left'}`;
 }
 function renderList(focusId) {
   const rows = lines();
@@ -186,6 +282,7 @@ $('staple').innerHTML = Object.entries(products).map(([id,[name]])=>`<option val
 $('start').addEventListener('change',event=>{
   if (!event.target.value) {event.target.value=state.start;return;}
   state.start=event.target.value;
+  $('menu-status').textContent = '';
   renderDays();
   save();
 });
@@ -198,12 +295,10 @@ for (const name of ['limit','tax']) {
     save();
   });
 }
-$('days').addEventListener('change',event=>{
-  const {day} = event.target.dataset;
-  if (day === undefined) return;
-  state.meals[Number(day)] = event.target.value;
-  // Preserve checked items only while the package count stays the same.
+function setMeal(day, id) {
   const before = lastCounts;
+  state.meals[day] = id;
+  // A changed package count can invalidate a checkmark or an on-hand quantity.
   const after = new Map(lines().map(row=>[row.id,row.count]));
   for (const id of Object.keys(state.checked)) {
     if (!after.has(id) || before.get(id) !== after.get(id)) delete state.checked[id];
@@ -212,9 +307,14 @@ $('days').addEventListener('change',event=>{
     if (after.get(id) > (before.get(id) ?? 0)) delete state.stocked[id];
   }
   renderDays();
-  $('meal-'+day)?.focus({preventScroll:true});
   refreshList();
   save();
+}
+$('days').addEventListener('change',event=>{
+  const {day} = event.target.dataset;
+  if (day === undefined) return;
+  setMeal(Number(day),event.target.value);
+  $('meal-'+day)?.focus({preventScroll:true});
 });
 let lastCounts;
 function refreshList(focusId) {
@@ -270,6 +370,7 @@ $('extra-form').addEventListener('submit',event=>{
 $('starter').addEventListener('click',()=>{
   if (!window.confirm('Replace this week’s meals and checklist with the starter plan?')) return;
   Object.assign(state,{meals:[...starterMeals],packs:{...starterPacks},stocked:{},checked:{},extras:[]});
+  $('menu-status').textContent = '';
   render();
   refreshList();
   save();
@@ -277,6 +378,7 @@ $('starter').addEventListener('click',()=>{
 $('next').addEventListener('click',()=>{
   if (!window.confirm('Start a blank week? This clears meals, extras and checkmarks. Your budget and item prices carry over.')) return;
   Object.assign(state,{start:isoDate(dateAt(state.start,7)),meals:Array(7).fill(''),packs:{},stocked:{},checked:{},extras:[]});
+  $('menu-status').textContent = '';
   render();
   refreshList();
   save();
