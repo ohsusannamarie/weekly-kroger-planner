@@ -90,6 +90,7 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 .cost{font-variant-numeric:tabular-nums;font-weight:600}
 .tag{font-size:12px;border-radius:6px;padding:1px 6px;background:var(--line);color:var(--mute)}
 .tag.pick{background:var(--soft);color:var(--brand);font-weight:600}
+.tag.t72{display:inline-block;margin-top:4px}.tag.t72.any{background:var(--soft);color:var(--brand)}.tag.t72.frz{background:var(--ice);color:var(--ice-ink)}.tag.t72.early{background:var(--warnbg);color:var(--warn)}
 </style>
 </head>
 <body>
@@ -102,7 +103,7 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 "use strict";
 /* ========= DATA ========= */
 // p = price. obs:1 means seen on a real receipt (Apr-Aug 2026). Everything else is an estimate (shown as ~$).
-// f:1 = fresh perishable protein (subject to the 72 hour rule). s = store section. pan:1 = pantry item (assumed in stock until you flag it).
+// f:1 = fresh perishable protein (subject to the 72 hour rule). nf:1 = fresh protein that freezes poorly (cook by day 3). s = store section. pan:1 = pantry item (assumed in stock until you flag it).
 const SECTIONS=[["meat","Meat & deli"],["dairy","Dairy & eggs"],["produce","Produce"],["frozen","Frozen"],["grocery","Grocery & pantry"],["bakery","Bread & bakery"],["bev","Coffee & drinks"],["home","Household"]];
 const ITEMS={
  gbs:{n:"Ground Angus sirloin 90/10, 1 lb",p:10.49,obs:1,s:"meat",f:1},
@@ -112,7 +113,7 @@ const ITEMS={
  chk:{n:"Chicken breast, ~1.5 lb",p:7.49,s:"meat",f:1},
  pork:{n:"Boneless pork loin chop",p:5.00,obs:1,s:"meat",f:1},
  bacon:{n:"Thick-cut hardwood smoked bacon, 16 oz",p:4.79,obs:1,s:"meat",f:1},
- ham:{n:"Deli honey ham, ~0.75 lb",p:8.75,obs:1,s:"meat",f:1},
+ ham:{n:"Deli honey ham, ~0.75 lb",p:8.75,obs:1,s:"meat",f:1,nf:1},
  shrimp:{n:"Frozen raw shrimp, 12 oz",p:8.99,s:"frozen"},
  hwc:{n:"Heavy whipping cream, pint",p:3.39,obs:1,s:"dairy"},
  hwcq:{n:"Heavy whipping cream, quart",p:5.49,obs:1,s:"dairy"},
@@ -283,7 +284,7 @@ function art(m,sm){
   return `<span class="art${sm?" sm":""}"><img class="photo" src="meals/${m.id}.webp" alt="" width="480" height="320" loading="lazy" decoding="async"><span class="time">${m.m} min</span>${S.rate[m.id]==="love"?'<span class="heart" aria-hidden="true">♥</span>':""}</span>`;
 }
 const RAWMEAT=["gbs","gb80","gpork","turk","chk","pork","thighs","steak","italsaus"],CURED=["bacon","ham","rotis","kielb"];
-const LANES=[["early","Cook early","Days 1 to 3. Fresh meat that should be cooked first."],["mid","Midweek","Bacon, ham and rotisserie. Cook these in the middle of the week."],["pantry","Freezer & pantry","Frozen or shelf-stable. Save two of these for the end of the week."]];
+const LANES=[["early","Cook early","Days 1 to 3. Fresh meat that should be cooked first."],["mid","Midweek","Bacon, ham and rotisserie. Cook by day 3, or freeze the bacon on shopping day."],["pantry","Freezer & pantry","Frozen or shelf-stable. Save two of these for the end of the week."]];
 function lane(m){
   if(m.lane)return m.lane;
   const ids=m.items.map(([r])=>rid(r));
@@ -307,6 +308,19 @@ function suggest(n){
   return out;
 }
 function defMode(off){return off<FRESH_DAYS?"fresh":"freeze";}
+/* 72 hour rule: fresh protein is cooked within 72 hours of purchase, or frozen on shopping day.
+   any = no fresh protein, fine any day. freeze = fine after day 3 if its protein is frozen on shopping day.
+   early = uses a protein that freezes poorly (deli ham), so cook in days 1 to 3. */
+const SHORT={gbs:"ground beef",gb80:"ground beef",gpork:"ground pork",turk:"ground turkey",chk:"chicken",pork:"pork chop",bacon:"bacon",ham:"deli ham",italsaus:"Italian sausage",steak:"steak",thighs:"chicken thighs",rotis:"rotisserie chicken"};
+function freshOf(m){return [...new Set(m.items.map(([r])=>rid(r)).filter(i=>ITEMS[i].f))];}
+function tier(m){const f=freshOf(m);if(!f.length)return "any";return f.some(i=>ITEMS[i].nf)?"early":"freeze";}
+const listOf=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+function tierTag(m){
+  const t=tier(m),f=freshOf(m).map(i=>SHORT[i]||ITEMS[i].n);
+  if(t==="any")return '<span class="tag t72 any" title="No fresh protein, so the 72 hour rule does not apply">✓ OK any day</span>';
+  if(t==="early")return `<span class="tag t72 early" title="${esc(listOf(f))} gets watery when frozen">Days 1 to 3 only</span>`;
+  return `<span class="tag t72 frz" title="Freeze the ${esc(listOf(f))} on shopping day">❄ Day 4+ if ${esc(listOf(f))} is frozen</span>`;
+}
 
 /* ========= LIST ENGINE ========= */
 function compute(){
@@ -395,12 +409,13 @@ function viewPlan(C){
       h+=`<div class="meal">${art(m,true)}<div style="flex:1;min-width:0"><div class="nm">${esc(m.n)}</div>
        <div class="mute">${m.m} min · ~${money(mealCost(m))}${m.g?` · ${m.k} kcal, ${m.g} g protein`:""} · ${kind(m)}</div>
        ${tagsOf(m).length?`<div class="chips" style="margin-top:4px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}
+       <div>${tierTag(m)}</div>
        <div class="row" style="margin-top:6px"><span class="mute">Cook on</span><select data-act="movemeal" data-d="${off}" data-i="${i}" style="min-height:34px;padding:4px 8px">${[0,1,2,3,4,5,6].map(o=>`<option value="${o}" ${o===off?"selected":""}>${esc(dayLabel(o))}</option>`).join("")}</select><span class="mute">${esc(LANES.find(x=>x[0]===lane(m))[1])}</span></div>
        ${fresh?`<div class="chips" style="margin-top:6px">
          <button class="chip ${sl.mode==="fresh"?"on":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="fresh">Cook fresh</button>
          <button class="chip ${sl.mode==="freeze"?"on ice":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="freeze">Freeze it</button>
          <button class="chip ${sl.mode==="midweek"?"on":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="midweek">Mid-week run</button></div>
-         ${late&&sl.mode==="fresh"?'<div class="mute" style="color:var(--warn);margin-top:4px">Cooking fresh here breaks the 72 hour rule.</div>':""}`:""}
+         ${late&&sl.mode==="fresh"?'<div class="mute" style="color:var(--warn);margin-top:4px">Cooking fresh here breaks the 72 hour rule.</div>':late&&sl.mode==="freeze"&&tier(m)==="early"?'<div class="mute" style="color:var(--warn);margin-top:4px">Deli ham gets watery when frozen. Move this to one of the first 3 days, or buy the ham on the Mid-week run.</div>':""}`:""}
        </div><div style="display:flex;flex-direction:column;gap:6px"><button class="chip love ${loved(sl.id)?"on":""}" data-act="love" data-id="${sl.id}" aria-label="Love" style="justify-content:center;min-width:44px">♥</button><button class="btn ghost sm" data-act="rm" data-d="${off}" data-i="${i}" aria-label="Remove">✕</button></div></div>`;
     });
     h+=`<button class="btn sec sm" style="margin-top:8px" data-act="pick" data-d="${off}">+ Add meal</button></div>`;
@@ -478,7 +493,7 @@ function viewTrip(C){
    <div class="mute">${spent>S.budget?money(spent-S.budget)+" over this week":money(S.budget-spent)+" of room left"}</div></div>`;
   if(fc){
     h+=`<div class="card"><h3>❄️ Freeze tonight (${fc} portion${fc===1?"":"s"})</h3><div class="mute" style="margin:2px 0 6px">Pack each protein as one flat single-meal portion so the small top freezer holds more. Move it to the fridge the night before you cook it.</div>`;
-    for(let o=0;o<7;o++)for(const sl of S.plan[o])if(sl.mode==="freeze"&&hasFresh(sl.id)){const m=meal(sl.id);h+=`<div class="item"><div class="t">${esc(m.n)}<div class="mute">cook ${esc(dayLabel(o))} · thaw ${esc(dayLabel(Math.max(0,o-1)))} night</div></div></div>`;}
+    for(let o=0;o<7;o++)for(const sl of S.plan[o])if(sl.mode==="freeze"&&hasFresh(sl.id)){const m=meal(sl.id);h+=`<div class="item"><div class="t">${esc(m.n)}<div class="mute">${tier(m)==="early"?'<span style="color:var(--warn)">deli ham freezes poorly, move this to days 1 to 3</span>':"freeze the "+esc(listOf(freshOf(m).map(i=>SHORT[i]||ITEMS[i].n)))} · cook ${esc(dayLabel(o))} · thaw ${esc(dayLabel(Math.max(0,o-1)))} night</div></div></div>`;}
     h+=`</div>`;
   }
   if(S.tripDone)h+=`<div class="card flag"><h3>Trip logged</h3><div class="mute" style="margin:2px 0 8px">Keep this week's plan and the freeze checklist until the week is over. When you are ready, start next week's menu.</div><button class="btn full" data-act="newweek">Start next week's menu</button></div>`;
@@ -562,6 +577,7 @@ function moreMenu(){
 const menuIds=()=>{const a=S.menu.ids.filter(i=>!isNo(i));planned().forEach(i=>{if(!a.includes(i))a.push(i);});return a;};
 function placeMeal(id,plan){
   const ln=lane(meal(id));
+  if(tier(meal(id))==="early"){let b=2;for(const d of [1,0]){if(plan[d].length<plan[b].length)b=d;}plan[b].push({id,mode:"fresh"});return;}
   const order=ln==="early"?[0,1,2,3,4,5,6]:ln==="mid"?[2,3,1,4,0,5,6]:[6,5,4,3,2,1,0];
   let best=order[0];
   for(const d of order){if(plan[d].length<plan[best].length)best=d;}
@@ -608,6 +624,7 @@ function viewMenu(C){
   let ids;
   if(f==="All") ids=picks.filter(id=>meal(id));
   else if(f==="Hidden") ids=MEALS.filter(m=>isNo(m.id)).map(m=>m.id);
+  else if(f==="Late") ids=MEALS.filter(m=>!isNo(m.id)&&tier(m)!=="early").map(m=>m.id);
   else ids=MEALS.filter(m=>!isNo(m.id)&&(f==="Library"||(f==="Loved"?loved(m.id):m.t===f))).map(m=>m.id);
   const target=sel.length>=5&&sel.length<=6;
   let h=`<div class="hero"><img src="bowl.jpg" alt="" onerror="this.remove()"><b>What sounds good this week?</b></div><div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
@@ -615,7 +632,7 @@ function viewMenu(C){
    <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
    <div class="row mute" style="margin-top:4px;gap:8px;flex-wrap:wrap"><span id="menu-breakdown">${C.lines.length||C.run2.length?money(C.food)+" food · "+money(C.home)+" household"+(C.tax?" · "+money(C.tax)+" tax":""):"Your shopping list is empty."}</span><button class="btn ghost sm" data-act="tab" data-v="list">See list</button></div>
    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>
-   <div class="chips" style="margin-top:10px">${[["Library","All meals"],["All","★ This week's picks"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}" aria-pressed="${f===t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
+   <div class="chips" style="margin-top:10px">${[["Library","All meals"],["All","★ This week's picks"],["Late","OK past 72 hrs"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}" aria-pressed="${f===t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Late"?" ("+MEALS.filter(m=>!isNo(m.id)&&tier(m)!=="early").length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
   if(C.total>S.budget){
     const usesBeef=C.lines.some(l=>l.id==="gbs");
     h+=`<div class="note bad"><b>${money(C.total-S.budget)} over budget.</b> Swap a pricier meal for a cheaper one, or tap Pick for me.${usesBeef?` <button class="btn sm" style="margin-top:6px" data-act="beef" data-v="gb80">Switch to 80/20 beef</button>`:""}</div>`;
@@ -632,7 +649,7 @@ function viewMenu(C){
         const items=m.items.map(([r,fr])=>ITEMS[rid(r)].n).join(", ");
     h+=`<div class="card ${on?"sel":""}" style="padding:0;overflow:hidden"><button class="mc" data-act="sel" data-id="${id}" aria-pressed="${on}" style="display:block;padding:0">${art(m)}<span style="display:flex;gap:12px;align-items:flex-start;padding:12px 12px 4px"><span class="ring">${on?"✓":""}</span>
       <span style="flex:1;min-width:0"><span class="nm" style="display:block;font-weight:700">${esc(m.n)}</span>
-      <span class="mute" style="display:block">${f!=="All"&&picks.includes(id)?'<span class="tag pick">★ This week</span> ':""}${esc(m.t)} · ${kind(m)}${m.g?` · ${m.g} g protein`:""}</span>
+      <span class="mute" style="display:block">${f!=="All"&&picks.includes(id)?'<span class="tag pick">★ This week</span> ':""}${esc(m.t)} · ${kind(m)}${m.g?` · ${m.g} g protein`:""}</span>${tierTag(m)}
       ${tagsOf(m).length?`<span class="chips" style="margin-top:5px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</span>`:""}</span>
       <span class="cost" style="white-space:nowrap">${on?"✓ ":""}~${money(mealCost(m))}<span class="mute" style="display:block;font-weight:400;font-size:12px;text-align:right">per meal</span></span></span></button>
       <div class="row" style="padding:0 12px 12px;align-items:flex-start"><details style="flex:1;min-width:0"><summary class="mute" style="font-weight:500">What's in it</summary><div class="mute" style="margin-top:4px">${esc(items)}</div></details>
