@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173e33">
+<title>Weekly Kroger Planner</title>
+<style>
+:root{color-scheme:light;--paper:#f6f4ec;--white:#fffef9;--green:#173e33;--green-mid:#2e594b;--lime:#e6eecf;--ink:#182c25;--dim:#50625a;--line:#d9e0d3;--warn:#892e1e;--gold:#f7e8cd;--radius:18px;font-family:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);line-height:1.45}
+button,input,select{font:inherit;color:inherit}button,select,input[type=date]{cursor:pointer}input,select{min-width:0;max-width:100%}button,input,select{border:1px solid var(--line);border-radius:10px;background:var(--white);padding:.57rem .73rem;min-height:44px}
+button{font-weight:650}button:hover{background:var(--lime)}:focus-visible{outline:3px solid #628244;outline-offset:3px}
+a{color:inherit;text-underline-offset:.22em}h1,h2,h3,p{margin:0}h1,h2{font-family:Georgia,serif;font-weight:normal;line-height:1.05}h2{font-size:clamp(1.9rem,4vw,2.6rem)}small,.muted{color:var(--dim);font-size:.86rem}
+header{background:var(--green);color:var(--white)}.shell{width:min(1140px,calc(100% - 36px));margin:auto}.hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:stretch;min-height:232px}
+.hero-copy{padding:36px 24px 34px 0}.hero h1{font-size:clamp(2.5rem,6vw,4.75rem);letter-spacing:-.055em}.hero p{color:#e6eedf;margin:14px 0 22px;max-width:34ch}.hero-photo{background:#2e594b url('bowl.jpg') center 54%/cover no-repeat;min-height:130px}
+.jump{display:inline-flex;align-items:center;padding:.59rem .89rem;border-radius:10px;background:var(--lime);color:var(--green);font-weight:750;text-decoration:none;min-height:44px}
+.controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px 16px;padding:16px 0}.control{display:grid;gap:4px;font-weight:650;font-size:.85rem}.control input[type=number]{width:105px}
+.topline{border-bottom:1px solid var(--line);background:#ecefe3}.week-actions{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:24px;padding:28px 0 32px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.panel-head{padding:22px 20px 16px}.panel-head p{margin-top:7px}.coverage{padding:12px 16px;background:var(--lime);border-radius:12px;margin:0 20px 12px;font-size:.9rem}.coverage.needs{background:var(--gold)}
+.days{padding:0 20px 12px}.day{padding:13px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px 12px;align-items:start}
+.dateline{padding-top:4px;display:grid;gap:3px}.day select{width:100%}.reserve{font-size:.68rem;text-transform:uppercase;letter-spacing:.055em;font-weight:780;color:var(--green-mid)}
+details{font-size:.84rem;color:var(--dim);margin-top:6px}summary{cursor:pointer;padding:4px 0;font-weight:650}details p{padding:4px 0}.warning{color:var(--warn);margin-top:5px}
+.budget{background:var(--green);color:var(--white);padding:20px}.budget small{color:#dce8da}.budget-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.total{display:block;font:normal 2.8rem/1 Georgia,serif}.room{font-weight:750;text-align:right}.over{color:#ffd8b8}
+.track{height:7px;border-radius:8px;background:#4c675c;overflow:hidden;margin:14px 0}#bar{height:100%;background:#c8df8e;width:0}.breakdown{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;font-size:.82rem}
+.shop-tools{padding:12px 20px 0;display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap}.primary{background:var(--green);color:white;border-color:var(--green)}.primary:hover{background:var(--green-mid)}
+#list{padding:0 20px 16px}.group{margin-top:15px}.group h3{font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--green-mid);margin-bottom:4px}.row{display:grid;grid-template-columns:minmax(0,1fr) auto 79px;align-items:center;gap:8px;border-top:1px solid var(--line);padding:6px 0}.item{display:flex;gap:8px;align-items:center;min-height:44px;min-width:0}.item span{overflow-wrap:anywhere}.item input{appearance:auto;accent-color:var(--green);min-height:21px;width:21px;margin:0;flex:none}.item small{display:block}.row.bought .item strong{text-decoration:line-through}.row.stocked .item{opacity:.7}.row input[type=number]{width:79px;padding:.45rem}.have{font-size:.76rem;padding:.37rem .5rem}.have[aria-pressed=true]{background:var(--lime)}.list-note{margin-top:10px}
+.add{border-top:1px solid var(--line);padding:13px 20px 18px}.add summary{font-size:.95rem;color:var(--green)}.add-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:9px 0}.add input,.add select{width:100%}.delete{grid-column:2 / 4;justify-self:end;font-size:.75rem;min-height:36px}.foot{padding-bottom:24px}.notice{margin-top:10px;color:var(--warn)}.secondary{display:flex;gap:6px 14px;flex-wrap:wrap;margin-top:8px}.sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.skip{position:absolute;top:4px;left:8px;transform:translateY(-150%);background:white;padding:10px;z-index:2}.skip:focus{transform:none}[hidden]{display:none!important}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:16px;padding-top:16px}.hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:26px 0 22px}.hero-photo{border-radius:14px 14px 0 0;min-height:128px}.hero p{margin:8px 0 14px}.week-actions{margin-left:0}.shell{width:calc(100% - 24px)}}@media(max-width:370px){.days,.panel-head,#list,.shop-tools,.add{padding-left:13px;padding-right:13px}.coverage{margin-left:13px;margin-right:13px}.day{grid-template-columns:64px minmax(0,1fr);gap:8px}.row{grid-template-columns:minmax(0,1fr) auto 64px;gap:5px}.row input[type=number]{width:64px}}
+</style>
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#plan">Skip to meal plan</a>
+<header>
+  <div class="shell hero">
+    <div class="hero-copy">
+      <h1>Weekly Kroger Planner</h1>
+      <p>Pick your meals, check what you have, and take one list to the store.</p>
+      <a class="jump" href="#shopping">Go to shopping list ↓</a>
+    </div>
+    <div class="hero-photo" aria-hidden="true"></div>
+  </div>
+</header>
+<div class="topline">
+ <div class="shell controls">
+  <label class="control">Shopping day <input id="start" type="date"></label>
+  <label class="control">Weekly budget ($) <input id="limit" type="number" min="0" max="9999" step=".01"></label>
+  <label class="control">Tax buffer ($) <input id="tax" type="number" min="0" max="9999" step=".01"></label>
+  <div class="week-actions"><button id="starter" type="button">Load starter plan</button><button id="next" type="button">Start next week</button></div>
+ </div>
+</div>
+<main class="shell layout">
+ <section class="panel" id="plan" aria-labelledby="plan-title">
+  <div class="panel-head"><h2 id="plan-title">This week’s meals</h2><p class="muted">One serving a day. Pick freezer or pantry meals for the last two days.</p></div>
+  <div class="coverage" id="coverage" role="status"></div>
+  <div class="days" id="days"></div>
+ </section>
+ <section class="panel" id="shopping" aria-labelledby="shop-title">
+  <div class="panel-head"><h2 id="shop-title">Kroger list</h2><p class="muted">Meal ingredients are combined into full packages. Mark what you have and edit prices as needed.</p></div>
+  <div class="budget" id="budget" aria-live="polite">
+   <div class="budget-top"><div><small>Estimated checkout</small><strong class="total" id="total"></strong></div><div class="room" id="room"></div></div>
+   <div class="track" aria-hidden="true"><div id="bar"></div></div>
+   <div class="breakdown"><span id="food-total"></span><span id="home-total"></span><span id="tax-total"></span></div>
+  </div>
+  <div class="shop-tools"><span id="progress" class="muted" aria-live="polite"></span><button class="primary" type="button" id="copy">Copy unchecked list</button></div>
+  <div id="list"></div>
+  <div class="add">
+   <details>
+    <summary>Add staples or household supplies</summary>
+    <form id="staple-form" class="add-grid"><label class="sr" for="staple">Choose a staple</label><select id="staple"></select><button type="submit">Add a pack</button></form>
+   </details>
+   <details>
+    <summary>Add something else</summary>
+    <form id="extra-form">
+     <div class="add-grid">
+      <label class="sr" for="extra-name">Item name</label><input id="extra-name" maxlength="65" placeholder="Item name" required>
+      <label class="sr" for="extra-price">Estimated price</label><input id="extra-price" placeholder="Price ($)" type="number" min="0" max="9999" step=".01" required>
+      <label class="sr" for="extra-group">Aisle</label><select id="extra-group"><option>Pantry</option><option>Produce</option><option>Meat &amp; seafood</option><option>Frozen</option><option>Dairy &amp; deli</option><option>Household</option></select>
+      <button type="submit">Add item</button>
+     </div>
+    </form>
+   </details>
+   <p class="notice" id="action-status" role="status" hidden></p>
+  </div>
+ </section>
+</main>
+<footer class="shell foot muted">
+ <p id="save-status">Your plan and list are saved in this browser.</p>
+ <div class="secondary"><span>Prices are editable estimates.</span><a href="https://ask.fsis.usda.gov/article/How-long-can-I-keep-meat-in-the-refrigerator" target="_blank" rel="noopener">USDA food storage</a></div>
+</footer>
+</body>
+</html>
