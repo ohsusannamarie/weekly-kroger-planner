@@ -603,14 +603,17 @@ function rateBtns(id){
 function viewMenu(C){
   const sel=planned();
   const f=UI.mf||"All";
-  const ids=f==="Library"?MEALS.filter(m=>!isNo(m.id)).map(m=>m.id):f==="Loved"?MEALS.filter(m=>loved(m.id)).map(m=>m.id):f==="Hidden"?MEALS.filter(m=>isNo(m.id)).map(m=>m.id):menuIds().filter(id=>{const m=meal(id);return m&&(f==="All"||m.t===f);});
+  let ids;
+  if(f==="All") ids=menuIds().filter(id=>meal(id));
+  else if(f==="Hidden") ids=MEALS.filter(m=>isNo(m.id)).map(m=>m.id);
+  else ids=MEALS.filter(m=>!isNo(m.id)&&(f==="Library"||(f==="Loved"?loved(m.id):m.t===f))).map(m=>m.id);
   const target=sel.length>=5&&sel.length<=6;
   let h=`<div class="hero"><img src="bowl.jpg" alt="" onerror="this.remove()"><b>What sounds good this week?</b></div><div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
-   <div class="mute">Tap the meals you want. He eats one or two real meals a day, so 5 or 6 is plenty. Each is a single serving, one pan or pot. Meal prices are the portions you use. The total includes whole packages and any extras on your list.</div>
+   <div class="mute">Tap a meal to add it. Choose All meals to browse the full library. Each is a single serving, one pan or pot. Meal prices are the portions you use. The total includes whole packages and any extras on your list.</div>
    <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
    <div class="row mute" style="margin-top:4px;gap:8px;flex-wrap:wrap"><span id="menu-breakdown">${C.lines.length||C.run2.length?money(C.food)+" food · "+money(C.home)+" household"+(C.tax?" · "+money(C.tax)+" tax":""):"Your shopping list is empty."}</span><button class="btn ghost sm" data-act="tab" data-v="list">See list</button></div>
    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>
-   <div class="chips" style="margin-top:10px">${[["All","This week"],["Library","All meals"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
+   <div class="chips" style="margin-top:10px">${[["All","This week"],["Library","All meals"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}" aria-pressed="${f===t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
   if(C.total>S.budget){
     const usesBeef=C.lines.some(l=>l.id==="gbs");
     h+=`<div class="note bad"><b>${money(C.total-S.budget)} over budget.</b> Swap a pricier meal for a cheaper one, or tap Pick for me.${usesBeef?` <button class="btn sm" style="margin-top:6px" data-act="beef" data-v="gb80">Switch to 80/20 beef</button>`:""}</div>`;
