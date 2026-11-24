@@ -74,13 +74,9 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 .hero b{position:absolute;left:14px;bottom:12px;right:14px;color:#fff;font-size:20px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
 .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 60%)}
 .hero b{z-index:1}
-.art{position:relative;overflow:hidden;border-radius:12px;height:116px;display:flex;align-items:center;justify-content:center}
-.art .plate{position:absolute;width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(0,0,0,.25),inset 0 0 0 6px rgba(0,0,0,.05)}
-.art .e0{position:relative;font-size:54px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
-.art .e1,.art .e2{position:absolute;font-size:26px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
-.art .e1{left:calc(50% + 40px);top:62px}.art .e2{left:calc(50% - 68px);top:18px}
-.art.sm{height:64px;width:64px;flex:none;border-radius:10px}
-.art.sm .plate{width:48px;height:48px}.art.sm .e0{font-size:28px}.art.sm .e1,.art.sm .e2{display:none}
+.art{position:relative;overflow:hidden;display:block;width:100%;aspect-ratio:16/9;background:var(--line)}
+.art .photo{display:block;width:100%;height:100%;object-fit:cover}
+.art.sm{width:64px;height:64px;aspect-ratio:1;flex:none;border-radius:10px}
 .art .time{position:absolute;right:8px;top:8px;background:rgba(0,0,0,.45);color:#fff;border-radius:99px;font-size:12px;padding:2px 8px}
 .art.sm .time{display:none}
 .art .heart{position:absolute;left:8px;top:6px;color:#ff5a6e;font-size:22px;text-shadow:0 1px 3px rgba(0,0,0,.45)}
@@ -262,7 +258,7 @@ const FRESH_DAYS=3; // days 0-2 after shopping stay inside the 72 hour window
 /* ========= STATE ========= */
 const KEY="dakotaGroceries.v1";
 const DEF={tab:"menu",taxRate:6,rate:{},menu:{seed:1,ids:[]},lastPicks:[],tripDone:false,budget:75,shopDay:5,beef:"gbs",freezeCap:6,plan:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},
- extras:{hwc:1,banana:1,saladkit:1},need:{},prices:{},have:{},checked:{},custom:[],log:[],last:{}};
+ extras:{},need:{},prices:{},have:{},checked:{},custom:[],log:[],last:{}};
 let S;
 const CLONE=()=>JSON.parse(JSON.stringify(DEF));
 try{S=Object.assign(CLONE(),JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){S=CLONE();}
@@ -282,23 +278,8 @@ function shopDate(){const d=new Date();d.setHours(12,0,0,0);while(d.getDay()!==S
 function dayDate(off){const d=shopDate();d.setDate(d.getDate()+off);return d;}
 const dayLabel=off=>{const d=dayDate(off);return DAYS[d.getDay()]+" "+(d.getMonth()+1)+"/"+d.getDate();};
 const meal=id=>MEALS.find(m=>m.id===id);
-const ART={
- meatloaf:["🍖","🥔","🧈"],tacos:["🌮","🧀","🌶️"],swissburg:["🍔","🍄","🧅"],chilibeef:["🍚","🥦","🥩"],shep:["🥧","🥔","🥕"],
- porkchop:["🥩","🥔","🧈"],sloppy:["🥪","🧅","🍟"],bolog:["🍝","🧀","🍅"],quesa:["🌮","🧀","🥓"],potsoup:["🍲","🥓","🥔"],
- cheesestk:["🥖","🧀","🌶️"],potpie:["🥧","🍗","🥕"],lomein:["🍜","🍗","🥦"],taqbowl:["🥗","🍗","🍚"],turkragu:["🍝","🍅","🧅"],
- szechtaco:["🌮","🌶️","🥢"],scampi:["🍤","🍝","🧄"],snackplate:["🧀","🍎","🍖"],smashburg:["🍔","🥓","🧀"],nachos:["🧀","🌶️","🍅"],
- cheeseburgmac:["🧀","🍔","🍝"],stuffedpep:["🫑","🍚","🧀"],terimeat:["🥦","🍚","🥩"],meatsub:["🥖","🍅","🧀"],
- steakbites:["🥩","🥔","🧈"],cheesesteak2:["🥖","🫑","🥩"],mushchop:["🥩","🍄","🥛"],honeychop:["🥩","🍯","🍚"],
- baconmac:["🥓","🧀","🍝"],sausagegn:["🌭","🫑","🍅"],sausagepot:["🌭","🥔","🧀"],hamdelts:["🥪","🍯","🧀"],
- loadedspud:["🥔","🥓","🧀"],buffquesa:["🌮","🔥","🍗"],honeythigh:["🍗","🍯","🥦"],cajunalf:["🍝","🍗","🌶️"],
- potpiesoup:["🍲","🍗","🥕"],bbqflat:["🍕","🍗","🧅"],fajita:["🫑","🌮","🍗"],turkspud:["🍠","🧀","🍽️"],
- turkburg:["🍔","🌶️","🧅"],cajunshrimp:["🍤","🍚","🌶️"],shrimptaco:["🌮","🍤","🌶️"],terisalmon:["🐟","🍚","🥦"],
- tilapiataco:["🌮","🐟","🌶️"],ramenglow:["🍜","🥚","🌭"],pinwheels:["🌯","🍖","🧀"],velvglow:["🧀","🥓","🥦"],pizzaup:["🍕","🧀","🧅"],spudbowl:["🥔","🌭","🥦"]
-};
-const GRAD={Beef:["#b4472a","#6e2616"],Pork:["#d9794a","#8f3f22"],Chicken:["#e0a93c","#a8691a"],Turkey:["#a87b4f","#6b4a2b"],Seafood:["#3b8db8","#1f5476"],"Snack plate":["#6f9c52","#3f6b33"]};
 function art(m,sm){
-  const a=ART[m.id]||["🍽️","",""];const g=GRAD[m.t]||GRAD.Beef;
-  return `<div class="art${sm?" sm":""}" style="background:linear-gradient(135deg,${g[0]},${g[1]})"><span class="plate"></span><span class="e0">${a[0]}</span><span class="e1">${a[1]}</span><span class="e2">${a[2]}</span><span class="time">${m.m} min</span>${S.rate[m.id]==="love"?'<span class="heart">♥</span>':""}</div>`;
+  return `<span class="art${sm?" sm":""}"><img class="photo" src="meals/${m.id}.webp" alt="" width="480" height="320" loading="lazy" decoding="async"><span class="time">${m.m} min</span>${S.rate[m.id]==="love"?'<span class="heart" aria-hidden="true">♥</span>':""}</span>`;
 }
 const RAWMEAT=["gbs","gb80","gpork","turk","chk","pork","thighs","steak","italsaus"],CURED=["bacon","ham","rotis","kielb"];
 const LANES=[["early","Cook early","Days 1 to 3. Fresh meat that should be cooked first."],["mid","Midweek","Bacon, ham and rotisserie. Cook these in the middle of the week."],["pantry","Freezer & pantry","Frozen or shelf-stable. Save two of these for the end of the week."]];
@@ -625,8 +606,9 @@ function viewMenu(C){
   const ids=f==="Loved"?MEALS.filter(m=>loved(m.id)).map(m=>m.id):f==="Hidden"?MEALS.filter(m=>isNo(m.id)).map(m=>m.id):menuIds().filter(id=>{const m=meal(id);return m&&(f==="All"||m.t===f);});
   const target=sel.length>=5&&sel.length<=6;
   let h=`<div class="hero"><img src="bowl.jpg" alt="" onerror="this.remove()"><b>What sounds good this week?</b></div><div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
-   <div class="mute">Tap the meals you want. He eats one or two real meals a day, so 5 or 6 is plenty. Each is a single serving, one pan or pot. Meal prices are the portion you use. The total counts whole packages, since that is what he pays at the register.</div>
+   <div class="mute">Tap the meals you want. He eats one or two real meals a day, so 5 or 6 is plenty. Each is a single serving, one pan or pot. Meal prices are the portions you use. The total includes whole packages and any extras on your list.</div>
    <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
+   <div class="row mute" style="margin-top:4px;gap:8px;flex-wrap:wrap"><span id="menu-breakdown">${C.lines.length||C.run2.length?money(C.food)+" food · "+money(C.home)+" household"+(C.tax?" · "+money(C.tax)+" tax":""):"Your shopping list is empty."}</span><button class="btn ghost sm" data-act="tab" data-v="list">See list</button></div>
    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>
    <div class="chips" style="margin-top:10px">${[["All","All"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}">${l}${t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
   if(C.total>S.budget){
@@ -650,7 +632,7 @@ function viewMenu(C){
       <div class="row" style="padding:0 12px 12px;align-items:flex-start"><details style="flex:1;min-width:0"><summary class="mute" style="font-weight:500">What's in it</summary><div class="mute" style="margin-top:4px">${esc(items)}</div></details>
        <div class="chips" style="flex:none">${rateBtns(id)}</div></div></div>`;
   }
-  h+=`<button class="btn full" data-act="tab" data-v="plan" style="margin-top:6px">Review my week (${sel.length})</button>`;
+  h+=`<button class="btn full" data-act="tab" data-v="plan" style="margin-top:6px">Review my week (${sel.length})</button><p class="mute">Meal photos are generated serving suggestions.</p>`;
   return h;
 }
 
