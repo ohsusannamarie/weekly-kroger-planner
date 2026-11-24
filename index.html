@@ -76,6 +76,7 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 .hero b{z-index:1}
 .art{position:relative;overflow:hidden;display:block;width:100%;aspect-ratio:16/9;background:var(--line)}
 .art .photo{display:block;width:100%;height:100%;object-fit:cover}
+.art .ph{display:none}.art.nophoto{background:linear-gradient(135deg,#d9a441,#9a5a1c);display:flex;align-items:center;justify-content:center}.art.nophoto .ph{display:block;font-size:56px;line-height:1}.art.sm.nophoto .ph{font-size:28px}
 .art.sm{width:64px;height:64px;aspect-ratio:1;flex:none;border-radius:10px}
 .art .time{position:absolute;right:8px;top:8px;background:rgba(0,0,0,.45);color:#fff;border-radius:99px;font-size:12px;padding:2px 8px}
 .art.sm .time{display:none}
@@ -144,6 +145,11 @@ const ITEMS={
  bread:{n:"Dave's Killer Bread 21 Whole Grains",p:6.99,obs:1,s:"bakery"},
  crackers:{n:"Crackers or pita chips",p:3.49,s:"grocery"},
  broth:{n:"Chicken broth, carton",p:2.99,s:"grocery"},
+ beefbroth:{n:"Beef broth, carton",p:2.99,s:"grocery"},
+ shredched:{n:"Shredded sharp cheddar, 8 oz",p:2.49,s:"dairy"},
+ cantal:{n:"Cantaloupe",p:2.99,s:"produce"},
+ pineapple:{n:"Pineapple",p:2.49,s:"produce"},
+ pears:{n:"Pears, 2 lb bag",p:3.49,s:"produce"},
  ragu:{n:"Ragu Roasted Garlic sauce",p:3.49,s:"grocery"},
  salsa:{n:"Salsa",p:3.29,s:"grocery"},
  bbq:{n:"BBQ sauce",p:2.99,s:"grocery",pan:1},
@@ -246,12 +252,15 @@ const MEALS=[
  {id:"pinwheels",n:"Ham & cream cheese pinwheels (no cook)",t:"Snack plate",m:10,items:[["ham",.5],["tort",.25],["cream",.3],["ranch",.05]],w:["Honey ham","No cleanup"]},
  {id:"velvglow",lane:"pantry",n:"Velveeta shells glow-up with bacon & broccoli",t:"Snack plate",m:10,items:[["velv",2],["bacon",.15],["broc",.2]],w:["Upgrades his comfort stash","Microwave"]},
  {id:"pizzaup",lane:"pantry",n:"Doctored frozen pizza with extra cheese & onion",t:"Snack plate",m:20,items:[["vpizza",1],["cheese",.25],["onion",.1],["ranch",.05]],w:["Cheese","Low cost","His pizza habit"]},
+ {id:"frenchonion",e:"🧅",n:"French onion soup with melted Swiss toast",t:"Soup",m:45,items:[["onion",.5],["butter",.15],["beefbroth",.6],["wor",.05],["bread",.1],["swiss",.25]],w:["Homemade soup","Cheese","One pot"]},
+ {id:"brocched",e:"🥦",n:"Broccoli cheddar soup",t:"Soup",m:25,items:[["broc",.6],["shredched",.5],["hwc",.3],["broth",.5],["onion",.1],["butter",.1]],w:["Homemade soup","Veggies hidden","Heavy cream"]},
+ {id:"tomsoup",e:"🍅",n:"Creamy roasted garlic tomato soup with cheddar toast",t:"Soup",m:20,items:[["ragu",.5],["hwc",.2],["broth",.3],["garlic",.05],["bread",.1],["cheddarsl",.2]],w:["Homemade soup","Garlicky Italian","20 minutes"]},
  {id:"spudbowl",lane:"pantry",n:"Smoked sausage mashed potato bowl",t:"Snack plate",m:15,items:[["idaho",.5],["kielb",.5],["cheese",.2],["broc",.3]],w:["Upgrades his comfort stash","Veggies hidden","Microwave"]}
 ];
-const TYPES=["All","New","Loved","Past hits","Beef","Pork","Chicken","Turkey","Seafood","Snack plate"];
+const TYPES=["All","New","Loved","Past hits","Beef","Pork","Chicken","Turkey","Seafood","Soup","Snack plate"];
 const KIT=[["hwc","Heavy whipping cream (pint)"],["sugar","Cane sugar"],["bustelo","Café Bustelo"]];
 const BASICS=[["milk"],["butter"],["cheese"],["yogurt"],["flip"],["bread"],["ham"]];
-const FRUIT=[["banana"],["apples"],["saladkit"]];
+const FRUIT=[["banana"],["apples"],["cantal"],["pineapple"],["pears"],["saladkit"]];
 const BACKUP=[["ramen"],["velv"],["idaho"],["cpk"],["icecream"]];
 const HOUSE=[["tp"],["dawn"]];
 const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -281,7 +290,7 @@ function dayDate(off){const d=shopDate();d.setDate(d.getDate()+off);return d;}
 const dayLabel=off=>{const d=dayDate(off);return DAYS[d.getDay()]+" "+(d.getMonth()+1)+"/"+d.getDate();};
 const meal=id=>MEALS.find(m=>m.id===id);
 function art(m,sm){
-  return `<span class="art${sm?" sm":""}"><img class="photo" src="meals/${m.id}.webp" alt="" width="480" height="320" loading="lazy" decoding="async"><span class="time">${m.m} min</span>${S.rate[m.id]==="love"?'<span class="heart" aria-hidden="true">♥</span>':""}</span>`;
+  return `<span class="art${sm?" sm":""}"><img class="photo" src="meals/${m.id}.webp" alt="" width="480" height="320" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('nophoto');this.remove()"><span class="ph" aria-hidden="true">${m.e||"🍽️"}</span><span class="time">${m.m} min</span>${S.rate[m.id]==="love"?'<span class="heart" aria-hidden="true">♥</span>':""}</span>`;
 }
 const RAWMEAT=["gbs","gb80","gpork","turk","chk","pork","thighs","steak","italsaus"],CURED=["bacon","ham","rotis","kielb"];
 const LANES=[["early","Cook early","Days 1 to 3. Fresh meat that should be cooked first."],["mid","Midweek","Bacon, ham and rotisserie. Cook by day 3, or freeze the bacon on shopping day."],["pantry","Freezer & pantry","Frozen or shelf-stable. Save two of these for the end of the week."]];
@@ -295,13 +304,13 @@ function lane(m){
 const kind=m=>S.rate[m.id]==="love"?"Loved":m.hf?"Past hit":m.fav?"Classic":"New idea";
 const isNo=id=>S.rate[id]==="no";
 const loved=id=>S.rate[id]==="love";
-const TW={Beef:3,Pork:3,Chicken:1.5,Turkey:1,Seafood:1.2,"Snack plate":.3};
+const TW={Beef:3,Pork:3,Chicken:1.5,Turkey:1,Seafood:2,Soup:1,"Snack plate":.3};
 const tagsOf=m=>(m.w||[]).slice(0,3);
 function planned(){const a=[];for(let o=0;o<7;o++)for(const sl of S.plan[o])a.push(sl.id);return a;}
 function suggest(n){
   const have=planned(),cnt={};
   have.forEach(id=>{const m=meal(id);if(m)cnt[m.t]=(cnt[m.t]||0)+1;});
-  const sc=MEALS.filter(m=>!have.includes(m.id)&&!isNo(m.id)&&(cnt[m.t]||0)<2).map(m=>({m,s:(TW[m.t]||1)+(m.hf?0:2)+(m.fav?.5:0)+(loved(m.id)?2.5:0)+Math.random()*1.5}));
+  const sc=MEALS.filter(m=>!have.includes(m.id)&&!isNo(m.id)&&(m.t==="Seafood"||(cnt[m.t]||0)<2)).map(m=>({m,s:(TW[m.t]||1)+(m.hf?0:2)+(m.fav?.5:0)+(loved(m.id)?2.5:0)+Math.random()*1.5}));
   sc.sort((a,b)=>b.s-a.s);
   const out=[],seen=new Set();
   for(const x of sc){if(out.length>=n)break;if(seen.has(x.m.t))continue;seen.add(x.m.t);out.push(x.m);}
@@ -540,7 +549,7 @@ function renderSheet(){
 
 /* ========= MENU ========= */
 function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
-const QUOTA={Beef:3,Pork:3,Chicken:2,Turkey:1,Seafood:1,"Snack plate":1};
+const QUOTA={Beef:3,Pork:3,Chicken:2,Turkey:1,Seafood:2,Soup:1,"Snack plate":1};
 function wpick(pool,r){
   const w=pool.map(m=>(m.hf?1:m.fav?2:3)*(S.rate[m.id]==="love"?4:1));const tot=w.reduce((a,b)=>a+b,0);let x=r()*tot;
   for(let i=0;i<pool.length;i++){x-=w[i];if(x<=0)return pool[i];}return pool[pool.length-1];
@@ -594,7 +603,7 @@ function pickForMe(){
     const sh=shuffle(pool);const pk=[];
     for(const id of sh){
       const m=meal(id);if(pk.length>=5)break;
-            if(pk.filter(x=>meal(x).t===m.t).length>=2)continue;
+            if(m.t!=="Seafood"&&pk.filter(x=>meal(x).t===m.t).length>=2)continue;
       pk.push(id);
     }
     if(pk.length<5)continue;
@@ -632,7 +641,7 @@ function viewMenu(C){
    <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
    <div class="row mute" style="margin-top:4px;gap:8px;flex-wrap:wrap"><span id="menu-breakdown">${C.lines.length||C.run2.length?money(C.food)+" food · "+money(C.home)+" household"+(C.tax?" · "+money(C.tax)+" tax":""):"Your shopping list is empty."}</span><button class="btn ghost sm" data-act="tab" data-v="list">See list</button></div>
    <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>
-   <div class="chips" style="margin-top:10px">${[["Library","All meals"],["All","★ This week's picks"],["Late","OK past 72 hrs"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}" aria-pressed="${f===t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Late"?" ("+MEALS.filter(m=>!isNo(m.id)&&tier(m)!=="early").length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
+   <div class="chips" style="margin-top:10px">${[["Library","All meals"],["All","★ This week's picks"],["Late","OK past 72 hrs"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Soup","Soup"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}" aria-pressed="${f===t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Late"?" ("+MEALS.filter(m=>!isNo(m.id)&&tier(m)!=="early").length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
   if(C.total>S.budget){
     const usesBeef=C.lines.some(l=>l.id==="gbs");
     h+=`<div class="note bad"><b>${money(C.total-S.budget)} over budget.</b> Swap a pricier meal for a cheaper one, or tap Pick for me.${usesBeef?` <button class="btn sm" style="margin-top:6px" data-act="beef" data-v="gb80">Switch to 80/20 beef</button>`:""}</div>`;
