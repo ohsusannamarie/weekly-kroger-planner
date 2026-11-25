@@ -1,5 +1,5 @@
 const prefix = 'dakota-groceries-';
-const cacheName = prefix + 'v7';
+const cacheName = prefix + 'v8';
 const assets = [
   './', './index.html', './manifest.webmanifest', './icon.svg', './bowl.jpg',
 

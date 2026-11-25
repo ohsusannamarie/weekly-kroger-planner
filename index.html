@@ -103,46 +103,46 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 <script>
 "use strict";
 /* ========= DATA ========= */
-// p = price. obs:1 means seen on a real receipt (Apr-Aug 2026). Everything else is an estimate (shown as ~$).
+// p = price. obs:1 means seen on a real receipt (Apr-Nov 2026; prices refreshed from Sep-Nov Kroger receipts). Everything else is an estimate (shown as ~$).
 // f:1 = fresh perishable protein (subject to the 72 hour rule). nf:1 = fresh protein that freezes poorly (cook by day 3). s = store section. pan:1 = pantry item (assumed in stock until you flag it).
 const SECTIONS=[["meat","Meat & deli"],["dairy","Dairy & eggs"],["produce","Produce"],["frozen","Frozen"],["grocery","Grocery & pantry"],["bakery","Bread & bakery"],["bev","Coffee & drinks"],["home","Household"]];
 const ITEMS={
- gbs:{n:"Ground Angus sirloin 90/10, 1 lb",p:10.49,obs:1,s:"meat",f:1},
+ gbs:{n:"Ground Angus sirloin 90/10, 1 lb",p:8.99,obs:1,s:"meat",f:1},
  gb80:{n:"Ground beef 80/20, 1 lb",p:6.49,obs:1,s:"meat",f:1},
  gpork:{n:"Ground pork, 1 lb",p:5.49,s:"meat",f:1},
  turk:{n:"Ground turkey, 1 lb",p:5.49,s:"meat",f:1},
  chk:{n:"Chicken breast, ~1.5 lb",p:7.49,s:"meat",f:1},
  pork:{n:"Boneless pork loin chop",p:5.00,obs:1,s:"meat",f:1},
  bacon:{n:"Thick-cut hardwood smoked bacon, 16 oz",p:4.79,obs:1,s:"meat",f:1},
- ham:{n:"Deli honey ham, ~0.75 lb",p:8.75,obs:1,s:"meat",f:1,nf:1},
+ ham:{n:"Deli Wildflower Honey ham, ~0.5 lb",p:4.76,obs:1,s:"meat",f:1,nf:1},
  shrimp:{n:"Frozen raw shrimp, 12 oz",p:8.99,s:"frozen"},
  hwc:{n:"Heavy whipping cream, pint",p:3.39,obs:1,s:"dairy"},
  hwcq:{n:"Heavy whipping cream, quart",p:5.49,obs:1,s:"dairy"},
- milk:{n:"Whole milk, gallon",p:3.19,obs:1,s:"dairy"},
+ milk:{n:"Whole milk, gallon",p:2.89,obs:1,s:"dairy"},
  butter:{n:"Kerrygold salted butter, 8 oz",p:6.29,obs:1,s:"dairy"},
- cheese:{n:"Shredded Nacho & Taco cheese, 8 oz",p:2.49,obs:1,s:"dairy"},
+ cheese:{n:"Shredded Nacho & Taco cheese, 8 oz",p:2.00,obs:1,s:"dairy"},
  swiss:{n:"Swiss cheese slices",p:3.99,s:"dairy"},
  colby:{n:"Colby Jack & Gouda snack pack",p:9.49,obs:1,s:"dairy"},
  yogurt:{n:"Low-fat yogurt tubes, 8 ct",p:1.99,obs:1,s:"dairy"},
  flip:{n:"Chobani Flip (dessert flavors)",p:1.20,obs:1,s:"dairy"},
  banana:{n:"Bananas",p:1.34,obs:1,s:"produce"},
- apples:{n:"Honeycrisp apples, bag",p:6.99,obs:1,s:"produce"},
+ apples:{n:"Cosmic Crisp or Honeycrisp apples, 2 lb bag",p:5.99,obs:1,s:"produce"},
  saladkit:{n:"Bagged salad kit (Dole Caesar)",p:2.99,obs:1,s:"produce"},
  onion:{n:"Yellow onions, 2 lb",p:3.29,obs:1,s:"produce"},
  mush:{n:"Sliced baby bella mushrooms",p:2.17,obs:1,s:"produce"},
  gbeans:{n:"Green beans",p:2.49,s:"produce"},
- potato:{n:"Potatoes, 3 lb",p:3.99,s:"produce"},
+ potato:{n:"Russet potatoes, 5 lb",p:2.99,obs:1,s:"produce"},
  fveg:{n:"Frozen stir-fry vegetables",p:2.49,s:"frozen"},
  peas:{n:"Frozen peas & carrots",p:1.99,s:"frozen"},
  rice:{n:"Rice, 2 lb",p:2.99,s:"grocery"},
  spag:{n:"Spaghetti",p:1.49,s:"grocery"},
  cavat:{n:"Cavatappi pasta",p:1.79,s:"grocery"},
  lomein:{n:"Lo mein noodles",p:2.99,s:"grocery"},
- tort:{n:"Mission flour tortillas",p:3.29,s:"bakery"},
+ tort:{n:"La Banderita soft taco flour tortillas, 10 ct",p:2.89,obs:1,s:"bakery"},
  buns:{n:"Hamburger buns, 8 ct",p:3.49,s:"bakery"},
  hoagie:{n:"Hoagie rolls, 6 ct",p:3.99,s:"bakery"},
  biscuits:{n:"Refrigerated biscuits",p:3.19,s:"bakery"},
- bread:{n:"Dave's Killer Bread 21 Whole Grains",p:6.99,obs:1,s:"bakery"},
+ bread:{n:"Pepperidge Farm Farmhouse brioche or butter bread",p:4.49,obs:1,s:"bakery"},
  crackers:{n:"Crackers or pita chips",p:3.49,s:"grocery"},
  broth:{n:"Chicken broth, carton",p:2.99,s:"grocery"},
  beefbroth:{n:"Beef broth, carton",p:2.99,s:"grocery"},
@@ -152,38 +152,38 @@ const ITEMS={
  pears:{n:"Pears, 2 lb bag",p:3.49,s:"produce"},
  ragu:{n:"Ragu Roasted Garlic sauce",p:3.49,s:"grocery"},
  salsa:{n:"Salsa",p:3.29,s:"grocery"},
- bbq:{n:"BBQ sauce",p:2.99,s:"grocery",pan:1},
+ bbq:{n:"Kinder's Hickory Brown Sugar BBQ sauce",p:4.49,obs:1,s:"grocery",pan:1},
  buff:{n:"Buffalo sauce",p:2.99,s:"grocery",pan:1},
  swchili:{n:"Sweet chili sauce",p:2.99,s:"grocery",pan:1},
  taco:{n:"Taco seasoning packet",p:0.50,obs:1,s:"grocery",pan:1},
  soy:{n:"Kikkoman soy sauce",p:2.99,obs:1,s:"grocery",pan:1},
  wor:{n:"Worcestershire sauce",p:1.49,obs:1,s:"grocery",pan:1},
- ketchup:{n:"Ketchup",p:2.49,s:"grocery",pan:1},
+ ketchup:{n:"Heinz ketchup",p:3.69,obs:1,s:"grocery",pan:1},
  garlic:{n:"Garlic and seasoning blend",p:3.49,s:"grocery",pan:1},
- sugar:{n:"Cane sugar",p:4.99,obs:1,s:"bev"},
- bustelo:{n:"Café Bustelo Dulce de Leche",p:9.99,obs:1,s:"bev"},
+ sugar:{n:"Domino golden cane sugar, 3.5 lb",p:4.69,obs:1,s:"bev"},
+ bustelo:{n:"Café Bustelo ground (Dulce de Leche or Vanilla Horchata), 11 oz",p:10.99,obs:1,s:"bev"},
  ramen:{n:"Maruchan ramen, 6 ct",p:2.69,obs:1,s:"grocery"},
- velv:{n:"Velveeta Shells & Cheese cups",p:1.69,obs:1,s:"grocery"},
- idaho:{n:"Idahoan Roasted Garlic Mashed cups, 4 ct",p:4.99,obs:1,s:"grocery"},
+ velv:{n:"Velveeta cups (4 ct box ~$4.99, priced per cup)",p:1.25,obs:1,s:"grocery"},
+ idaho:{n:"Idahoan Roasted Garlic Mashed cups, 4 ct",p:5.49,obs:1,s:"grocery"},
  cpk:{n:"California Pizza Kitchen BBQ chicken pizza",p:8.99,obs:1,s:"frozen"},
- icecream:{n:"Ice cream, Half Baked or caramel",p:5.99,s:"frozen"},
- tp:{n:"Toilet paper, 12 double rolls",p:6.49,obs:1,s:"home"},
- dawn:{n:"Dawn Platinum dish soap",p:3.39,obs:1,s:"home"},
+ icecream:{n:"Häagen-Dazs Dulce de Leche, 14 oz",p:4.49,obs:1,s:"frozen"},
+ tp:{n:"Toilet paper, 12 double rolls",p:6.79,obs:1,s:"home"},
+ dawn:{n:"Dawn Platinum dish soap",p:3.49,obs:1,s:"home"},
  italsaus:{n:"Italian sausage, 1 lb",p:5.99,s:"meat",f:1},
  kielb:{n:"Smoked sausage, 13 oz",p:3.49,obs:1,s:"meat"},
- steak:{n:"Sirloin or flat iron steak, ~12 oz",p:9.99,s:"meat",f:1},
- thighs:{n:"Boneless chicken thighs, ~1.5 lb",p:6.49,s:"meat",f:1},
- rotis:{n:"Hot rotisserie chicken",p:7.99,obs:1,s:"meat",f:1},
+ steak:{n:"Thin-sliced beef chuck steak, ~0.75 lb ($11.99/lb)",p:8.99,obs:1,s:"meat",f:1},
+ thighs:{n:"Boneless chicken thighs, ~1.5 lb ($3.98/lb)",p:5.97,obs:1,s:"meat",f:1},
+ rotis:{n:"Hot rotisserie chicken",p:9.99,obs:1,s:"meat",f:1},
  salmon:{n:"Frozen salmon fillets, 4 ct",p:11.99,s:"frozen"},
  tilapia:{n:"Frozen tilapia fillets",p:7.49,s:"frozen"},
- eggs:{n:"Eggs, dozen",p:3.29,s:"dairy"},
+ eggs:{n:"Cage-free brown eggs, dozen",p:3.99,obs:1,s:"dairy"},
  cream:{n:"Cream cheese, 8 oz",p:2.49,s:"dairy"},
  sour:{n:"Sour cream",p:2.29,s:"dairy"},
  cheddarsl:{n:"Sharp cheddar slices",p:2.99,s:"dairy"},
  provo:{n:"Provolone slices",p:3.49,s:"dairy"},
  pjack:{n:"Pepper jack slices",p:3.49,s:"dairy"},
- parm:{n:"Grated Parmesan",p:3.99,s:"dairy"},
- bell:{n:"Bell peppers, 3 ct",p:3.49,s:"produce"},
+ parm:{n:"Kroger grated Parmesan, 8 oz",p:3.49,obs:1,s:"dairy"},
+ bell:{n:"Sweet mini peppers, 1 lb",p:4.99,obs:1,s:"produce"},
  spinach:{n:"Baby spinach, bag",p:2.99,s:"produce"},
  sweetpot:{n:"Sweet potatoes, 3 lb",p:3.49,s:"produce"},
  broc:{n:"Frozen broccoli florets",p:1.99,s:"frozen"},
@@ -192,12 +192,18 @@ const ITEMS={
  gnocchi:{n:"Potato gnocchi, shelf-stable",p:3.49,s:"grocery"},
  fett:{n:"Fettuccine",p:1.79,s:"grocery"},
  chips:{n:"Tortilla chips",p:3.29,s:"grocery"},
- honey:{n:"Honey",p:4.49,s:"grocery",pan:1},
+ honey:{n:"Simple Truth Organic honey, 12 oz",p:5.49,obs:1,s:"grocery",pan:1},
  teri:{n:"Panda Express Mandarin Teriyaki sauce",p:4.99,obs:1,s:"grocery",pan:1},
  sriracha:{n:"Sriracha",p:3.29,s:"grocery",pan:1},
  ranch:{n:"Ranch dressing",p:3.29,s:"grocery",pan:1},
  cajun:{n:"Cajun seasoning",p:2.99,s:"grocery",pan:1},
- vpizza:{n:"Jack's frozen pizza",p:2.99,obs:1,s:"frozen"}
+ vpizza:{n:"Jack's frozen pizza",p:2.99,obs:1,s:"frozen"},
+ mocha:{n:"Bolthouse Mocha Cappuccino, 52 oz",p:5.99,obs:1,s:"bev"},
+ mcbowl:{n:"Marie Callender's bowl",p:2.99,obs:1,s:"frozen"},
+ hcsteam:{n:"Healthy Choice Cafe Steamers",p:3.19,obs:1,s:"frozen"},
+ flatbread:{n:"PS Hawaiian BBQ flatbread pizza",p:4.50,obs:1,s:"frozen"},
+ razors:{n:"BIC Flex 3 razors, 3 ct",p:5.49,obs:1,s:"home"},
+ trash:{n:"Hefty 13-gal trash bags, 45 ct",p:9.99,obs:1,s:"home"}
 };
 // Meals. items = [id, fraction of a package used per meal]. 'gb' = whichever ground beef is selected.
 // k/g = kcal and protein from the HelloFresh export (only the HelloFresh meals have them).
@@ -258,11 +264,11 @@ const MEALS=[
  {id:"spudbowl",lane:"pantry",n:"Smoked sausage mashed potato bowl",t:"Snack plate",m:15,items:[["idaho",.5],["kielb",.5],["cheese",.2],["broc",.3]],w:["Upgrades his comfort stash","Veggies hidden","Microwave"]}
 ];
 const TYPES=["All","New","Loved","Past hits","Beef","Pork","Chicken","Turkey","Seafood","Soup","Snack plate"];
-const KIT=[["hwc","Heavy whipping cream (pint)"],["sugar","Cane sugar"],["bustelo","Café Bustelo"]];
-const BASICS=[["milk"],["butter"],["cheese"],["yogurt"],["flip"],["bread"],["ham"]];
+const KIT=[["hwcq","Heavy whipping cream (quart)"],["sugar","Cane sugar"],["bustelo","Café Bustelo"]];
+const BASICS=[["milk"],["eggs"],["butter"],["cheese"],["yogurt"],["flip"],["bread"],["ham"],["mocha"]];
 const FRUIT=[["banana"],["apples"],["cantal"],["pineapple"],["pears"],["saladkit"]];
-const BACKUP=[["ramen"],["velv"],["idaho"],["cpk"],["icecream"]];
-const HOUSE=[["tp"],["dawn"]];
+const BACKUP=[["ramen"],["velv"],["idaho"],["cpk"],["flatbread"],["mcbowl"],["hcsteam"],["icecream"]];
+const HOUSE=[["tp"],["dawn"],["razors"],["trash"]];
 const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const FRESH_DAYS=3; // days 0-2 after shopping stay inside the 72 hour window
 
