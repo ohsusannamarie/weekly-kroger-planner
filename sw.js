@@ -1,5 +1,5 @@
 const prefix = 'dakota-groceries-';
-const cacheName = prefix + 'v8';
+const cacheName = prefix + 'v9';
 const assets = [
   './', './index.html', './manifest.webmanifest', './icon.svg', './bowl.jpg',
 
@@ -16,6 +16,7 @@ const assets = [
   './meals/szechtaco.webp', './meals/tacos.webp', './meals/taqbowl.webp', './meals/terimeat.webp',
   './meals/terisalmon.webp', './meals/tilapiataco.webp', './meals/turkburg.webp', './meals/turkragu.webp',
   './meals/turkspud.webp', './meals/velvglow.webp',
+  './meals/frenchonion.webp', './meals/brocched.webp', './meals/tomsoup.webp',
 ];
 
 self.addEventListener('install', event => {
