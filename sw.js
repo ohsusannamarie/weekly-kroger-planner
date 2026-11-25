@@ -1,7 +1,7 @@
 const prefix = 'dakota-groceries-';
-const cacheName = prefix + 'v9';
+const cacheName = prefix + 'v10';
 const assets = [
-  './', './index.html', './manifest.webmanifest', './icon.svg', './bowl.jpg',
+  './', './index.html', './manifest.webmanifest', './icon.svg', './bowl.jpg', './recipes.js?v=1',
 
   './meals/baconmac.webp', './meals/bbqflat.webp', './meals/bolog.webp', './meals/buffquesa.webp',
   './meals/cajunalf.webp', './meals/cajunshrimp.webp', './meals/cheeseburgmac.webp', './meals/cheesesteak2.webp',

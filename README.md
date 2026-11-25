@@ -1,24 +1,32 @@
-# Dakota's Grocery Planner
+# Dakota’s Grocery Planner
 
-A phone-first weekly grocery list builder. No backend, no accounts: everything saves in the browser on whichever device he uses.
+Pick single-serving meals, see how to cook them, and build a Kroger list that fits a weekly food and household budget.
 
-## What it does
-- **Meal library:** 50 meals, including new ideas built from his taste profile (his proteins, cheese, bold sauces, Tex-Mex, sweet and spicy Asian, garlicky Italian, steakhouse, BBQ, vegetables hidden inside dishes). The rest are his favorites and past HelloFresh hits. Every meal is single-serving, one pan or pot, with no canned food and no scrambled eggs. The picker leads with 3 suggestions picked for him. Every meal has a generated serving photo.
-- **Plan tab:** pick meals for each day after the shopping trip. Each fresh-protein meal is set to Cook fresh, Freeze it, or Mid-week run. Days 3 to 6 default to Freeze so the 72 hour rule holds. Auto-fill suggests a week that fits the budget.
-- **List tab:** builds the main trip list by store section, merges shared ingredients into whole packages, and runs a separate mid-week protein list. Coffee kit check (heavy cream, cane sugar, Café Bustelo), fruit and salad kit, weekly basics, backup stash, household.
-- **Next week:** after logging a main trip, Start next week's menu clears the plan and builds a new menu. Add staples and household supplies as needed.
-- **Trip tab:** log what you actually spent, separate main trips from top-ups, see the past 7 days against $75, and get a freeze-tonight checklist.
-- Prices marked `~` are estimates. Unmarked prices came from his Kroger receipts (Apr to Aug 2026). Tap any price to correct it and the app remembers.
+**[Open the live planner](https://ohsusannamarie.github.io/weekly-kroger-planner/)**
 
-## Publish on GitHub Pages
-1. Upload `index.html`, `manifest.webmanifest`, `sw.js`, `icon.svg`, `bowl.jpg` and the `meals/` folder to the repo root.
-2. Settings > Pages > Source: Deploy from a branch > `main` / root > Save.
-3. Open `https://<your-username>.github.io/dakota-groceries/` on his phone, then Share > Add to Home Screen.
+## Menu and recipes
 
-## Editing the data
-Meals, items, prices and the coffee kit live at the top of the `<script>` in `index.html` (`ITEMS`, `MEALS`, `KIT`). Source for the numbers: Dakota's Food Profile doc.
+- Tap a meal card to open its serving photo, measured ingredients, and step-by-step directions. The library has **53 recipes**, including French onion soup with Swiss toast, broccoli cheddar soup, and creamy roasted garlic tomato soup with cheddar toast. The serving photos are generated.
+- Use **Add to week** on the card or inside the recipe. Open recipes again from the Plan tab when it’s time to cook.
+- Set **Max per serving ($)** to filter the current Menu view by estimated serving cost. It works with the food categories and weekly picks. **Clear price** brings back the full set for that view.
+- **All meals** shows the full library. **This week’s picks** shows the current suggestions, marked with a star. **Add weekly picks** adds up to six eligible suggestions and opens that view. **Pick for me** uses the weekly suggestions to build a plan.
+- Mark meals you love or hide ones you want to skip. Restore hidden meals from the **Hidden** filter.
 
-## Notes
-- Data is per device. Clearing site data erases the plan and history.
-- Canned foods are deliberately absent (he avoids them), so there is no chili.
-- Add your own meals by copying a line in `MEALS` and listing item ids with the fraction of a package each meal uses. Save its serving photo as `meals/<id>.webp` and include it in the offline asset list in `sw.js`.
+## Plan, shop, and track spending
+
+- **Plan** lets you schedule meals around shopping day and select Cook fresh, Freeze it, or Mid-week run for fresh proteins. Choose two freezer or pantry meals for the end of the week. Follow the safe cooking temperatures linked in recipes. [FoodSafety.gov temperature chart](https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures)
+- **List** combines shared ingredients into whole grocery packages, shows food and household totals, and makes a separate list for a midweek trip if needed. Add coffee supplies, regular groceries, and household items as needed. Tap a price to update it.
+- **Trip** records what you spent, separates main trips and top-ups, and shows the past seven days against the weekly budget. It also shows which portions to freeze. Start a new menu when you’re ready for the next week.
+
+Per-serving prices use the planner’s estimated share of each package. The checkout estimate uses whole packages, extras, and applicable household tax. Recipe measurements are for cooking one serving.
+
+## Run or publish
+
+This is a static site. Run `python3 -m http.server 8767` in the repository and open [localhost:8767](http://localhost:8767). For GitHub Pages, publish from the root of the `main` branch.
+
+Data stays in the browser on the current device. The app can reopen offline after its first online load finishes caching the site and photos. Clearing browser site data removes the saved plan and history.
+
+## Edit the menu
+
+- `index.html` contains the meal catalog, shopping quantities, prices, and planner logic. `recipes.js` contains the cooking amounts and directions, keyed by meal ID.
+- Give each new meal the same ID in the catalog, `recipes.js`, and `meals/<id>.webp`. Add its photo to the offline asset list in `sw.js`. If the recipe file URL changes, update the matching entry in `sw.js` and advance the cache version.

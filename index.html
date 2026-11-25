@@ -92,6 +92,8 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 .tag{font-size:12px;border-radius:6px;padding:1px 6px;background:var(--line);color:var(--mute)}
 .tag.pick{background:var(--soft);color:var(--brand);font-weight:600}
 .tag.t72{display:inline-block;margin-top:4px}.tag.t72.any{background:var(--soft);color:var(--brand)}.tag.t72.frz{background:var(--ice);color:var(--ice-ink)}.tag.t72.early{background:var(--warnbg);color:var(--warn)}
+.recipe-dialog{width:min(100% - 24px,540px);max-height:88vh;max-height:88dvh;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);overflow:auto}
+.recipe-dialog::backdrop{background:#102119b0}.recipe-content{padding:16px}.recipe-title{font-size:22px;line-height:1.2;margin:0}.recipe-heading{position:sticky;top:0;z-index:1;align-items:flex-start;background:var(--card);padding-bottom:6px}.recipe-meta{margin:7px 0 13px}.recipe-dialog .art{border-radius:11px}.recipe-dialog h3{margin-top:16px}.recipe-dialog ul,.recipe-dialog ol{padding-left:24px;margin:7px 0 0}.recipe-dialog li{margin:5px 0}.recipe-dialog ol li{padding-left:2px;margin-bottom:9px}.recipe-dialog .btn{ flex-shrink:0 }.recipe-footer{display:flex;flex-direction:column;gap:9px;margin-top:16px}.recipe-footer a{color:var(--brand)}.price-filter{display:flex;gap:6px 8px;align-items:center;flex-wrap:wrap;margin-top:10px}.price-filter input{width:91px;padding:6px 8px}.price-filter .btn{min-height:42px}.recipe-link{min-height:34px}.meal-actions{display:flex;flex-direction:column;gap:8px;padding:5px 12px 12px}.meal-actions .btn{align-self:flex-start}.meal-controls{justify-content:space-between;align-items:flex-start;flex-wrap:wrap}.meal-controls details{min-width:120px;flex:1}.plan-recipe{margin-top:5px}
 </style>
 </head>
 <body>
@@ -99,6 +101,8 @@ details summary{cursor:pointer;font-weight:600;padding:4px 0}
 <main class="wrap" id="main"></main>
 <nav class="tabs" id="tabs"></nav>
 <div id="sheet"></div>
+<dialog id="recipe-dialog" class="recipe-dialog" aria-labelledby="recipe-title"></dialog>
+<script src="recipes.js?v=1"></script>
 
 <script>
 "use strict";
@@ -274,19 +278,20 @@ const FRESH_DAYS=3; // days 0-2 after shopping stay inside the 72 hour window
 
 /* ========= STATE ========= */
 const KEY="dakotaGroceries.v1";
-const DEF={tab:"menu",taxRate:6,rate:{},menu:{seed:1,ids:[]},lastPicks:[],tripDone:false,budget:75,shopDay:5,beef:"gbs",freezeCap:6,plan:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},
+const DEF={tab:"menu",taxRate:6,rate:{},menu:{seed:1,ids:[]},lastPicks:[],tripDone:false,budget:75,maxMealPrice:null,shopDay:5,beef:"gbs",freezeCap:6,plan:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},
  extras:{},need:{},prices:{},have:{},checked:{},custom:[],log:[],last:{}};
 let S;
 const CLONE=()=>JSON.parse(JSON.stringify(DEF));
 try{S=Object.assign(CLONE(),JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){S=CLONE();}
 for(let i=0;i<7;i++){if(!Array.isArray(S.plan[i]))S.plan[i]=[];}
-let UI={sheet:null,filter:"All",msg:""};
+let UI={sheet:null,filter:"All",msg:"",menuMessage:""};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
 /* ========= HELPERS ========= */
 const $=s=>document.querySelector(s);
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money=n=>"$"+(Math.round(n*100)/100).toFixed(2);
+const toCents=n=>Math.round(n*100);
+const money=n=>"$"+(toCents(n)/100).toFixed(2);
 const rid=id=>id==="gb"?S.beef:id;
 const price=id=>S.prices[id]!=null?S.prices[id]:ITEMS[id].p;
 const isEst=id=>!ITEMS[id].obs&&S.prices[id]==null;
@@ -425,6 +430,7 @@ function viewPlan(C){
        <div class="mute">${m.m} min · ~${money(mealCost(m))}${m.g?` · ${m.k} kcal, ${m.g} g protein`:""} · ${kind(m)}</div>
        ${tagsOf(m).length?`<div class="chips" style="margin-top:4px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}
        <div>${tierTag(m)}</div>
+       <button class="btn ghost sm plan-recipe" type="button" data-act="recipe" data-id="${m.id}" data-origin="plan" aria-haspopup="dialog">View recipe</button>
        <div class="row" style="margin-top:6px"><span class="mute">Cook on</span><select data-act="movemeal" data-d="${off}" data-i="${i}" style="min-height:34px;padding:4px 8px">${[0,1,2,3,4,5,6].map(o=>`<option value="${o}" ${o===off?"selected":""}>${esc(dayLabel(o))}</option>`).join("")}</select><span class="mute">${esc(LANES.find(x=>x[0]===lane(m))[1])}</span></div>
        ${fresh?`<div class="chips" style="margin-top:6px">
          <button class="chip ${sl.mode==="fresh"?"on":""}" data-act="mode" data-d="${off}" data-i="${i}" data-v="fresh">Cook fresh</button>
@@ -537,7 +543,7 @@ function mealCard(m,tag){
   return `<div class="card" style="margin:8px 0"><div class="row">${art(m,true)}<div style="flex:1;min-width:0"><div class="nm" style="font-weight:600">${esc(m.n)}</div>
     <div class="mute">${m.m} min · ~${money(mealCost(m))}${m.g?` · ${m.g} g protein`:""} · ${tag||kind(m)}</div>
     ${tagsOf(m).length?`<div class="chips" style="margin-top:5px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}</div>
-    <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch"><button class="btn sm" data-act="addmeal" data-id="${m.id}">Add</button><button class="chip love ${loved(m.id)?"on":""}" data-act="love" data-id="${m.id}" style="justify-content:center">♥</button></div></div></div>`;
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch"><button class="btn sm" data-act="addmeal" data-id="${m.id}">Add</button><button class="btn ghost sm recipe-link" type="button" data-act="recipe" data-id="${m.id}" data-origin="picker" aria-haspopup="dialog">Recipe</button><button class="chip love ${loved(m.id)?"on":""}" data-act="love" data-id="${m.id}" style="justify-content:center">♥</button></div></div></div>`;
 }
 function renderSheet(){
   const el=$("#sheet");
@@ -588,6 +594,7 @@ function genMenu(seed,keep,exclude){
 function moreMenu(){
   const r=rng(S.menu.seed*7+S.menu.ids.length);const ids=menuIds();let add=0;
   while(add<6){const pool=MEALS.filter(m=>!ids.includes(m.id)&&!isNo(m.id)&&(!S.lastPicks.includes(m.id)||loved(m.id)));if(!pool.length)break;const m=wpick(pool,r);S.menu.ids.push(m.id);ids.push(m.id);add++;}
+  return add;
 }
 const menuIds=()=>{const a=S.menu.ids.filter(i=>!isNo(i));planned().forEach(i=>{if(!a.includes(i))a.push(i);});return a;};
 function placeMeal(id,plan){
@@ -641,18 +648,29 @@ function viewMenu(C){
   else if(f==="Hidden") ids=MEALS.filter(m=>isNo(m.id)).map(m=>m.id);
   else if(f==="Late") ids=MEALS.filter(m=>!isNo(m.id)&&tier(m)!=="early").map(m=>m.id);
   else ids=MEALS.filter(m=>!isNo(m.id)&&(f==="Library"||(f==="Loved"?loved(m.id):m.t===f))).map(m=>m.id);
+  const limit=Number.isFinite(S.maxMealPrice)?S.maxMealPrice:null;
+  const matched=ids.length;
+  if(limit!==null) ids=ids.filter(id=>toCents(mealCost(meal(id)))<=toCents(limit));
   const target=sel.length>=5&&sel.length<=6;
   let h=`<div class="hero"><img src="bowl.jpg" alt="" onerror="this.remove()"><b>What sounds good this week?</b></div><div class="card"><h2 style="margin-bottom:2px">This week's menu</h2>
-   <div class="mute">Every meal is listed. ★ marks this week's picks, and Pick for me chooses from those. Tap a meal to add it. Each is a single serving, one pan or pot. Meal prices are the portions you use. The total includes whole packages and any extras on your list.</div>
+   <div class="mute">Tap a meal for the recipe. ★ marks this week's picks, and Pick for me chooses from those. Meal prices are estimates per serving. The checkout total includes whole packages and extras.</div>
    <div class="row" style="margin-top:10px"><span class="chip ${target?"on":""}"><b>${sel.length}</b> selected</span><span class="sp"></span><b class="cost">${money(C.total)}</b><span class="mute">of ${money(S.budget)}</span></div>
    <div class="row mute" style="margin-top:4px;gap:8px;flex-wrap:wrap"><span id="menu-breakdown">${C.lines.length||C.run2.length?money(C.food)+" food · "+money(C.home)+" household"+(C.tax?" · "+money(C.tax)+" tax":""):"Your shopping list is empty."}</span><button class="btn ghost sm" data-act="tab" data-v="list">See list</button></div>
-   <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">More options</button></div>
+   <div class="row" style="margin-top:10px;flex-wrap:wrap"><button class="btn sec sm" data-act="pfm">✨ Pick for me</button><button class="btn ghost sm" data-act="mshuffle">Shuffle menu</button><button class="btn ghost sm" data-act="mmore">Add weekly picks</button></div>
+   <p class="mute" role="status" ${UI.menuMessage?"":"hidden"}>${esc(UI.menuMessage)}</p>
+   <form id="menu-price-filter" class="price-filter">
+    <label class="mute" for="max-meal-price">Max per serving ($)</label>
+    <input id="max-meal-price" type="number" min="0" max="9999" step=".01" inputmode="decimal" placeholder="Any" value="${limit===null?"":limit.toFixed(2)}">
+    <button class="btn ghost sm" type="submit">Apply</button>
+    ${limit===null?"":'<button class="btn ghost sm" type="button" data-act="clearprice">Clear price</button>'}
+   </form>
    <div class="chips" style="margin-top:10px">${[["Library","All meals"],["All","★ This week's picks"],["Late","OK past 72 hrs"],["Loved","♥ Loved"],["Beef","Beef"],["Pork","Pork"],["Chicken","Chicken"],["Turkey","Turkey"],["Seafood","Seafood"],["Soup","Soup"],["Snack plate","Snack plate"],["Hidden","Hidden"]].map(([t,l])=>`<button class="chip ${f===t?"on":""}" data-act="mfilter" data-v="${t}" aria-pressed="${f===t}">${l}${t==="Library"?" ("+MEALS.filter(m=>!isNo(m.id)).length+")":t==="Late"?" ("+MEALS.filter(m=>!isNo(m.id)&&tier(m)!=="early").length+")":t==="Loved"?" ("+MEALS.filter(m=>loved(m.id)).length+")":t==="Hidden"?" ("+MEALS.filter(m=>isNo(m.id)).length+")":""}</button>`).join("")}</div></div>`;
   if(C.total>S.budget){
     const usesBeef=C.lines.some(l=>l.id==="gbs");
     h+=`<div class="note bad"><b>${money(C.total-S.budget)} over budget.</b> Swap a pricier meal for a cheaper one, or tap Pick for me.${usesBeef?` <button class="btn sm" style="margin-top:6px" data-act="beef" data-v="gb80">Switch to 80/20 beef</button>`:""}</div>`;
   }
-  if(!ids.length)h+=`<div class="note">${f==="Loved"?"Nothing loved yet. Tap ♥ on a meal he likes and it will keep coming back.":f==="Hidden"?"Nothing hidden. Meals marked Not for me end up here.":"No meals here."}</div>`;
+  if(limit!==null)h+=`<div class="mute" style="margin:8px 4px" role="status">${ids.length} of ${matched} meals · up to ${money(limit)} per serving</div>`;
+  if(!ids.length)h+=`<div class="note">${limit!==null&&matched?"No meals in this view match the price cap.":f==="Loved"?"Nothing loved yet. Tap ♥ on a meal he likes and it will keep coming back.":f==="Hidden"?"Nothing hidden. Meals marked Not for me end up here.":"No meals here."}</div>`;
   const li=id=>LANES.findIndex(l=>l[0]===lane(meal(id)));
   ids.sort((a,b)=>li(a)-li(b)||(picks.includes(b)-picks.includes(a)));
   const nPan=sel.filter(i=>lane(meal(i))==="pantry").length;
@@ -662,13 +680,15 @@ function viewMenu(C){
     const m=meal(id);const on=sel.includes(id);
     const ln=lane(m);if(ln!==lastLane){const L=LANES.find(x=>x[0]===ln);h+=`<div style="margin:16px 4px 2px"><h3>${L[1]}</h3><div class="mute">${L[2]}</div></div>`;lastLane=ln;}
         const items=m.items.map(([r,fr])=>ITEMS[rid(r)].n).join(", ");
-    h+=`<div class="card ${on?"sel":""}" style="padding:0;overflow:hidden"><button class="mc" data-act="sel" data-id="${id}" aria-pressed="${on}" style="display:block;padding:0">${art(m)}<span style="display:flex;gap:12px;align-items:flex-start;padding:12px 12px 4px"><span class="ring">${on?"✓":""}</span>
+    h+=`<div class="card ${on?"sel":""}" style="padding:0;overflow:hidden"><button class="mc" type="button" data-act="recipe" data-id="${id}" data-origin="menu" aria-haspopup="dialog" aria-label="View recipe for ${esc(m.n)}" style="display:block;padding:0">${art(m)}<span style="display:flex;gap:12px;align-items:flex-start;padding:12px 12px 4px"><span class="ring">${on?"✓":""}</span>
       <span style="flex:1;min-width:0"><span class="nm" style="display:block;font-weight:700">${esc(m.n)}</span>
       <span class="mute" style="display:block">${f!=="All"&&picks.includes(id)?'<span class="tag pick">★ This week</span> ':""}${esc(m.t)} · ${kind(m)}${m.g?` · ${m.g} g protein`:""}</span>${tierTag(m)}
       ${tagsOf(m).length?`<span class="chips" style="margin-top:5px">${tagsOf(m).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</span>`:""}</span>
       <span class="cost" style="white-space:nowrap">${on?"✓ ":""}~${money(mealCost(m))}<span class="mute" style="display:block;font-weight:400;font-size:12px;text-align:right">per meal</span></span></span></button>
-      <div class="row" style="padding:0 12px 12px;align-items:flex-start"><details style="flex:1;min-width:0"><summary class="mute" style="font-weight:500">What's in it</summary><div class="mute" style="margin-top:4px">${esc(items)}</div></details>
-       <div class="chips" style="flex:none">${rateBtns(id)}</div></div></div>`;
+      <div class="meal-actions">
+       ${f==="Hidden"?"":`<button class="btn ${on?"sec":""}" type="button" data-act="sel" data-id="${id}" aria-pressed="${on}" aria-label="${on?"Remove":"Add"} ${esc(m.n)} ${on?"from":"to"} week">${on?"Remove from week":"Add to week"}</button>`}
+       <div class="row meal-controls"><details><summary class="mute" style="font-weight:500">What's in it</summary><div class="mute" style="margin-top:4px">${esc(items)}</div></details><div class="chips">${rateBtns(id)}</div></div>
+      </div></div>`;
   }
   h+=`<button class="btn full" data-act="tab" data-v="plan" style="margin-top:6px">Review my week (${sel.length})</button><p class="mute">Meal photos are generated serving suggestions.</p>`;
   return h;
@@ -676,6 +696,60 @@ function viewMenu(C){
 
 /* ========= ACTIONS ========= */
 function addMeal(off,id){S.plan[off].push({id,mode:defMode(off)});}
+function toggleMeal(id){
+  if(planned().includes(id)) {
+    for(let i=0;i<7;i++)S.plan[i]=S.plan[i].filter(x=>x.id!==id);
+  } else placeMeal(id,S.plan);
+}
+
+const recipeDialog=$("#recipe-dialog");
+let recipeTrigger;
+function updateRecipePick(button,id){
+  const on=planned().includes(id);
+  button.textContent=on?"Remove from week":"Add to week";
+  button.setAttribute("aria-pressed",String(on));
+}
+function openRecipe(trigger){
+  const {id,origin}=trigger.dataset;
+  const m=meal(id);
+  if(!m)return;
+  const r=typeof RECIPES==="undefined"?null:RECIPES[id];
+  recipeDialog.innerHTML=`<article class="recipe-content">
+    <div class="row recipe-heading"><h2 class="recipe-title" id="recipe-title">${esc(m.n)}</h2><span class="sp"></span><button class="btn ghost" data-act="closerecipe" autofocus>Close</button></div>
+    <p class="mute recipe-meta">1 serving · About ${m.m} min</p>
+    ${art(m)}
+    ${r?`<h3>Ingredients</h3><ul>${r.ingredients.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+    <p class="mute">Keep a little cooking oil, salt, pepper and water on hand.</p>
+    <h3>How to cook it</h3><ol>${r.steps.map(step=>`<li>${esc(step)}</li>`).join("")}</ol>`:
+    '<p class="note">Recipe details are unavailable right now.</p>'}
+    <div class="recipe-footer">
+      ${origin==="menu"&&!isNo(id)?`<button class="btn full" type="button" data-act="recipepick" data-id="${id}"></button>`:""}
+      <a class="mute" href="https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures" target="_blank" rel="noopener">Safe cooking temperatures</a>
+    </div>
+  </article>`;
+  const button=recipeDialog.querySelector('[data-act="recipepick"]');
+  if(button)updateRecipePick(button,id);
+  recipeTrigger=trigger;
+  recipeDialog.showModal();
+  recipeDialog.scrollTop=0;
+}
+recipeDialog.addEventListener("close",()=>{
+  if(!recipeTrigger)return;
+  const {id,origin}=recipeTrigger.dataset;
+  const focus=recipeTrigger.isConnected?recipeTrigger:document.querySelector(`[data-act="recipe"][data-id="${id}"][data-origin="${origin}"]`);
+  focus?.focus({preventScroll:true});
+  recipeTrigger=null;
+});
+document.addEventListener("submit",e=>{
+  if(e.target.id!=="menu-price-filter")return;
+  e.preventDefault();
+  const input=$("#max-meal-price");
+  if(!input.validity.valid)return;
+  S.maxMealPrice=input.value===""?null:input.valueAsNumber;
+  save();
+  render();
+  $("#max-meal-price")?.focus({preventScroll:true});
+});
 function listText(C){
   const out=["Groceries · shop "+dayLabel(0)];
   const g=groupBySection(C.lines);
@@ -692,15 +766,25 @@ document.addEventListener("click",e=>{
   const a=b.dataset.act,d=b.dataset;
   if(a==="closesheet"){if(b.classList.contains("sheet")&&e.target.closest("[data-stop]")&&e.target!==b)return;UI.sheet=null;return render();}
   if(a==="tab"){S.tab=d.v;save();window.scrollTo(0,0);return render();}
+  if(a==="recipe")return openRecipe(b);
+  if(a==="closerecipe")return recipeDialog.close();
+  if(a==="recipepick"){
+    toggleMeal(d.id);save();render();updateRecipePick(b,d.id);return;
+  }
   if(a==="beef"){S.beef=d.v;}
-  else if(a==="sel"){const id=d.id;if(planned().includes(id)){for(let i=0;i<7;i++)S.plan[i]=S.plan[i].filter(x=>x.id!==id);}else placeMeal(id,S.plan);}
+  else if(a==="sel"){toggleMeal(d.id);}
+  else if(a==="clearprice"){S.maxMealPrice=null;}
   else if(a==="love"){if(loved(d.id))delete S.rate[d.id];else S.rate[d.id]="love";}
   else if(a==="no"){S.rate[d.id]="no";for(let i=0;i<7;i++)S.plan[i]=S.plan[i].filter(x=>x.id!==d.id);S.menu.ids=S.menu.ids.filter(x=>x!==d.id);}
   else if(a==="restore"){delete S.rate[d.id];}
   else if(a==="pfm"){pickForMe();}
-  else if(a==="mshuffle"){S.menu.seed=(S.menu.seed||1)+1;S.menu.ids=genMenu(S.menu.seed,planned(),S.lastPicks);}
-  else if(a==="mmore"){moreMenu();}
-  else if(a==="mfilter"){UI.mf=d.v;return render();}
+  else if(a==="mshuffle"){UI.menuMessage="";S.menu.seed=(S.menu.seed||1)+1;S.menu.ids=genMenu(S.menu.seed,planned(),S.lastPicks);}
+  else if(a==="mmore"){
+    const added=moreMenu();
+    UI.mf="All";
+    UI.menuMessage=added?`Added ${added} ${added===1?"meal":"meals"} to this week’s picks.`:"There are no more eligible meals to add this week.";
+  }
+  else if(a==="mfilter"){UI.mf=d.v;UI.menuMessage="";return render();}
   else if(a==="newweek"){newWeek();window.scrollTo(0,0);}
   else if(a==="clearplan"){for(let i=0;i<7;i++)S.plan[i]=[];}
   else if(a==="pick"){UI.sheet={d:+d.d};UI.sug=null;return render();}
